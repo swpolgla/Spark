@@ -77,11 +77,23 @@ static Operations::OperationNode* buildHelper(std::string input) {
     std::size_t expidx = input.find_first_of('^');
     
     if(subidx != std::string::npos) {
-        if(subidx > addidx || addidx == std::string::npos) {
-            Operations::MathNode *sub = new Operations::MathNode(subtraction);
-            sub -> setLeft(buildHelper(input.substr(0, subidx)));
-            sub -> setRight(buildHelper(input.substr(subidx + 1)));
-            return sub;
+        //This assists with determining if the dash is intended to be a negative sign
+        //instead of a subtraction symbol. If it is intended to be a negative sign, then
+        //it will likely have a non numerical character on the left side of it or one won't
+        //exist at all.
+        //Ex: "3*-2" "-1"
+        //When it is known to be a negative sign, processing it should be deferred until after
+        //other operations have been processed.
+        if(subidx - 1 >= 0 && std::isalnum(input[subidx - 1]) != 0) {
+            //In the order of operations, subtraction is the last operation that should be
+            //performed. However this is incorrect in specific cases such as "1-2+3"
+            //In cases of mixed addition and subtraction you must evaluate left to right.
+            if(subidx > addidx || addidx == std::string::npos) {
+                Operations::MathNode *sub = new Operations::MathNode(subtraction);
+                sub -> setLeft(buildHelper(input.substr(0, subidx)));
+                sub -> setRight(buildHelper(input.substr(subidx + 1)));
+                return sub;
+            }
         }
     }
     if(addidx != std::string::npos) {

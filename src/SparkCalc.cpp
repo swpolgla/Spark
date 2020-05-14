@@ -49,6 +49,11 @@ void SparkCalc::math_input_evt(wxCommandEvent& event) {
         std::string lineEval = std::string(this -> math_input -> GetLineText(x));
         lineEval.erase(remove_if(lineEval.begin(), lineEval.end(), isspace), lineEval.end());
         
+        if(lineEval.length() == 0) {
+            math_output -> AppendText('\n');
+            continue;
+        }
+        
         double eval = 0;
         
         std::string varName = "";
