@@ -31,6 +31,18 @@ static std::string replaceMathConstants(std::string _input) {
     return _input;
 }
 
+static std::string replaceDoubleNegatives(std::string _input) {
+    size_t index = _input.find("--");
+    while(index != std::string::npos) {
+        
+        _input.erase(index, 2);
+        _input.insert(index, "+");
+        
+        index = _input.find("--");
+    }
+    return _input;
+}
+
 /**
     A helper method that recursively parses an input string in order to build it's equivalent operation tree.
     It parses input with respect to PEMDAS order of operations. The resulting tree contains ValueNodes
@@ -50,31 +62,43 @@ static Operations::OperationNode* buildHelper(std::string input) {
     //Swap in math constants
     input = replaceMathConstants(input);
     
-    std::stack<size_t> parStack;
-    
-    size_t last = -1;
-    for(int x = 0; x < openCount; x++) {
-        last = input.find('(', last + 1);
-        parStack.push(last);
-    }
-    
-    while(!parStack.empty()) {
-        size_t start = parStack.top();
-        parStack.pop();
-        size_t end = input.find_first_of(')', start);
-        
-        OperationTree tree;
-        double val = tree.evaluate(input.substr(start + 1, end - start - 1));
-        input.erase(start, end - start + 1);
-        input.insert(start, std::to_string(val));
+    std::vector<int> parDepthList;
+    int parDepth = 0;
+    for(auto it = input.begin(); it != input.end(); it++) {
+        if(*it == '(') {
+            parDepth++;
+        }
+        else if(*it == ')') {
+            parDepth--;
+        }
+        parDepthList.push_back(parDepth);
     }
     
     //Begin parsing all inputs
     std::size_t subidx = input.find_last_of('-');
+    while(subidx != std::string::npos && parDepthList[subidx] != 0) {
+        subidx = input.find_last_of('-', subidx - 1);
+    }
+    
     std::size_t addidx = input.find_last_of('+');
+    while(addidx != std::string::npos && parDepthList[addidx] != 0) {
+        addidx = input.find_last_of('+', addidx - 1);
+    }
+    
     std::size_t dividx = input.find_last_of('/');
+    while(dividx != std::string::npos && parDepthList[dividx] != 0) {
+        dividx = input.find_last_of('/', dividx - 1);
+    }
+    
     std::size_t mulidx = input.find_last_of('*');
+    while(mulidx != std::string::npos && parDepthList[mulidx] != 0) {
+        mulidx = input.find_last_of('*', mulidx - 1);
+    }
+    
     std::size_t expidx = input.find_first_of('^');
+    while(expidx != std::string::npos && parDepthList[expidx] != 0) {
+        expidx = input.find_first_of('^', expidx + 1);
+    }
     
     if(subidx != std::string::npos) {
         //This assists with determining if the dash is intended to be a negative sign
@@ -84,7 +108,7 @@ static Operations::OperationNode* buildHelper(std::string input) {
         //Ex: "3*-2" "-1"
         //When it is known to be a negative sign, processing it should be deferred until after
         //other operations have been processed.
-        if(subidx - 1 >= 0 && std::isalnum(input[subidx - 1]) != 0) {
+        if(subidx - 1 >= 0 && (std::isalnum(input[subidx - 1]) != 0 || input[subidx - 1] == ')')) {
             //In the order of operations, subtraction is the last operation that should be
             //performed. However this is incorrect in specific cases such as "1-2+3"
             //In cases of mixed addition and subtraction you must evaluate left to right.
@@ -121,6 +145,16 @@ static Operations::OperationNode* buildHelper(std::string input) {
         exp -> setLeft(buildHelper(input.substr(0, expidx)));
         exp -> setRight(buildHelper(input.substr(expidx + 1)));
         return exp;
+    }
+    if(input.front() == '(' && input.back() == ')') {
+        Operations::MathNode *par = new Operations::MathNode(parentheses);
+        //Math nodes can't have null children, but parentheses only care about the left child.
+        //Creating an empty value node for the right child keeps things working as intended.
+        Operations::ValueNode *empty = new Operations::ValueNode();
+        Operations::OperationNode *internal = buildHelper(input.substr(1, input.length() - 2));
+        par -> setLeft(internal);
+        par -> setRight(empty);
+        return par;
     }
     else {
         Operations::ValueNode *value = new Operations::ValueNode();

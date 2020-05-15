@@ -25,6 +25,8 @@ double MathNode::evaluate() {
     double right = getRight() -> evaluate();
     
     switch (type) {
+        case parentheses:
+            return left;
         case exponent:
             return pow(left, right);
         case multiplication:

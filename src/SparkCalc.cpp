@@ -4,7 +4,7 @@ SparkCalc::SparkCalc( wxWindow* parent )
 :
 Spark( parent, -1, "Spark Calc" )
 {
-    
+    std::cout << std::stod("-3") << std::endl;
 }
 
 void SparkCalc::OnQuit(wxCommandEvent& WXUNUSED(event))
