@@ -68,9 +68,10 @@ void SparkCalc::math_input_evt(wxCommandEvent& event) {
         std::map<std::string, double>::iterator it;
         for(it = variableLookupTable.begin(); it != variableLookupTable.end(); it++) {
             size_t variableLocation = lineEval.find(it -> first);
-            if(variableLocation != std::string::npos) {
+            while(variableLocation != std::string::npos) {
                 lineEval.erase(variableLocation, it -> first.length());
                 lineEval.insert(variableLocation, std::to_string(it -> second));
+                variableLocation = lineEval.find(it -> first);
             }
         }
         
