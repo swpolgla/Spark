@@ -4,7 +4,11 @@ SparkCalc::SparkCalc( wxWindow* parent )
 :
 Spark( parent, -1, "Spark Calc" )
 {
-    std::cout << std::stod("-3") << std::endl;
+    math_input -> GetStyle(0, Standard_Input_Style);
+    
+    Default_Input_Color = Standard_Input_Style.GetTextColour();
+    
+    Input_Variable_Color.Set(52, 195, 235);
 }
 
 void SparkCalc::OnQuit(wxCommandEvent& WXUNUSED(event))
@@ -44,13 +48,20 @@ void SparkCalc::math_input_evt(wxCommandEvent& event) {
     std::string alphabeticalValues = "abcdefghijklmnopqrstuvwxyz";
     alphabeticalValues.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     
+    long lineStart = 0;
     int lineCount = math_input -> GetNumberOfLines();
     for(int x = 0; x < lineCount; x++) {
+        std::string originalLine = std::string(this -> math_input -> GetLineText(x));
         std::string lineEval = std::string(this -> math_input -> GetLineText(x));
         lineEval.erase(remove_if(lineEval.begin(), lineEval.end(), isspace), lineEval.end());
         
+        //Apply default text style to entire line
+        Standard_Input_Style.SetTextColour(Default_Input_Color);
+        math_input -> SetStyle(lineStart, lineStart + math_input -> GetLineText(x).length(), Standard_Input_Style);
+        
         if(lineEval.length() == 0) {
             math_output -> AppendText('\n');
+            lineStart++;
             continue;
         }
         
@@ -63,6 +74,11 @@ void SparkCalc::math_input_evt(wxCommandEvent& event) {
                 varName = lineEval.substr(0, equalLocation);
                 lineEval.erase(0, equalLocation + 1);
             }
+            
+            //Add text color to input box as needed
+            size_t inputBoxEqualLocation = originalLine.find_first_of('=');
+            Standard_Input_Style.SetTextColour(Input_Variable_Color);
+            math_input -> SetStyle(lineStart, lineStart + inputBoxEqualLocation, Standard_Input_Style);
         }
         
         std::map<std::string, double>::iterator it;
@@ -92,8 +108,12 @@ void SparkCalc::math_input_evt(wxCommandEvent& event) {
         }
         
         wxString lineString(line);
-        math_output -> AppendText(lineString);
+        math_output -> BeginTextColour(wxColour(103, 230, 0));
+        math_output -> WriteText(line);
+        math_output -> EndTextColour();
         math_output -> AppendText('\n');
+        
+        lineStart += originalLine.length() + 1;
     }
 }
 

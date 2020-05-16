@@ -27,7 +27,11 @@ class SparkCalc : public Spark
         void math_input_evt(wxCommandEvent& event);
 
     private:
+        wxRichTextAttr Standard_Input_Style;
+        wxColour Input_Variable_Color;
+        wxColour Default_Input_Color;
         wxDECLARE_EVENT_TABLE();
+        
 };
 
 enum

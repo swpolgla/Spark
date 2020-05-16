@@ -19,12 +19,12 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 	gbSizer2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	math_input = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxWANTS_CHARS );
-	math_input->SetFont( wxFont( 14, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
+	math_input->SetFont( wxFont( 16, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("PT Mono") ) );
 
 	gbSizer2->Add( math_input, wxGBPosition( 0, 0 ), wxGBSpan( 1, 3 ), wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
 
 	math_output = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxWANTS_CHARS );
-	math_output->SetFont( wxFont( 14, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
+	math_output->SetFont( wxFont( 16, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("PT Mono") ) );
 	math_output->Enable( false );
 
 	gbSizer2->Add( math_output, wxGBPosition( 0, 3 ), wxGBSpan( 1, 1 ), wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT, 5 );
@@ -86,12 +86,14 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	math_input->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_input->Connect( wxEVT_COMMAND_RICHTEXT_CHARACTER, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_input->Connect( wxEVT_COMMAND_RICHTEXT_DELETE, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
 }
 
 Spark::~Spark()
 {
 	// Disconnect Events
-	math_input->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_input->Disconnect( wxEVT_COMMAND_RICHTEXT_CHARACTER, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_input->Disconnect( wxEVT_COMMAND_RICHTEXT_DELETE, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
 
 }
