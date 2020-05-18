@@ -40,28 +40,21 @@ Spark( parent, -1, "Spark Calc" )
     math_output->Connect( wxEVT_NAVIGATION_KEY, wxCharEventHandler( SparkCalc::math_sync_scrollbar ), NULL, this );
     
     math_scrollbar -> SetScrollbar(math_input -> GetScrollPos(wxVERTICAL), math_input -> GetScrollThumb(wxVERTICAL), math_input -> GetScrollRange(wxVERTICAL), math_input -> GetScrollPageSize(wxVERTICAL));
+    math_scrollbar -> Disable();
 }
 
 void SparkCalc::math_scroll_evt(wxScrollEvent& event) {
-//    math_input -> ScrollIntoView(event.GetPosition(), <#int keyCode#>)
-//    math_output -> ScrollWindow(event.GetPosition(), 0);
-    std::cout << math_scrollbar -> GetThumbPosition() << std::endl;
     math_input -> GetScrollHelper() -> Scroll(0, event.GetPosition());
     math_output -> GetScrollHelper() -> Scroll(0, event.GetPosition());
 }
 
 void SparkCalc::math_scroll_up_evt(wxScrollEvent& event) {
-//    math_input -> ScrollIntoView(event.GetPosition(), <#int keyCode#>)
-//    math_output -> ScrollWindow(event.GetPosition(), 0);
-    std::cout << math_scrollbar -> GetThumbPosition() << std::endl;
     math_input -> GetScrollHelper() -> Scroll(0, math_scrollbar -> GetThumbPosition() - 1);
     math_output -> GetScrollHelper() -> Scroll(0, math_scrollbar -> GetThumbPosition() - 1);
     math_scrollbar -> SetThumbPosition(math_scrollbar -> GetThumbPosition() - 1);
 }
 
 void SparkCalc::math_scroll_down_evt(wxScrollEvent& event) {
-//    math_input -> ScrollIntoView(event.GetPosition(), <#int keyCode#>)
-//    math_output -> ScrollWindow(event.GetPosition(), 0);
     math_input -> GetScrollHelper() -> Scroll(0, math_scrollbar -> GetThumbPosition() + 1);
     math_output -> GetScrollHelper() -> Scroll(0, math_scrollbar -> GetThumbPosition() + 1);
     math_scrollbar -> SetThumbPosition(math_scrollbar -> GetThumbPosition() + 1);
@@ -193,7 +186,13 @@ void SparkCalc::sync_all_scrollbars() {
     math_input -> AdjustScrollbars();
     math_output -> AdjustScrollbars();
     
-    math_scrollbar -> SetScrollbar(math_input -> GetScrollPos(wxVERTICAL), math_input -> GetScrollThumb(wxVERTICAL), math_input -> GetScrollLines(wxVERTICAL), math_input -> GetScrollPageSize(wxVERTICAL));
+    if(math_input -> GetScrollRange(wxVERTICAL) > 0) {
+        math_scrollbar -> Enable();
+        math_scrollbar -> SetScrollbar(math_input -> GetScrollPos(wxVERTICAL), math_input -> GetScrollThumb(wxVERTICAL), math_input -> GetScrollLines(wxVERTICAL), math_input -> GetScrollPageSize(wxVERTICAL));
+    }
+    else {
+        math_scrollbar -> Disable();
+    }
     math_output -> Scroll(0, math_scrollbar -> GetThumbPosition());
     
     
@@ -209,8 +208,9 @@ void SparkCalc::sync_all_scrollbars() {
 void SparkCalc::math_sync_scrollbar(wxKeyEvent& event) {
     
     math_input -> OnChar(event);
-    
-    sync_all_scrollbars();
+    if(event.IsKeyInCategory(WXK_CATEGORY_ARROW) || event.IsKeyInCategory(WXK_CATEGORY_NAVIGATION)) {
+        sync_all_scrollbars();
+    }
 }
 
 wxBEGIN_EVENT_TABLE(SparkCalc, wxFrame)

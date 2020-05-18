@@ -17,9 +17,13 @@ namespace Operations {
         double value;
         
     public:
+        ~ValueNode() {
+            clean();
+        }
         ValueNode();
         void setValue(double _value);
         double evaluate();
+        void clean();
     };
 }
 

@@ -193,8 +193,14 @@ double OperationTree::evaluate(std::string _input) {
 
 void OperationTree::clean() {
     if(head != nullptr) {
-        head -> clean();
-        delete head;
+        if(head -> getType() == value) {
+            ValueNode *node = (ValueNode*)head;
+            delete node;
+        }
+        else {
+            MathNode *node = (MathNode*)head;
+            delete node;
+        }
         head = nullptr;
     }
 }
