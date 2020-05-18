@@ -15,6 +15,7 @@
 #include <wx/colour.h>
 #include <wx/settings.h>
 #include <wx/string.h>
+#include <wx/scrolbar.h>
 #include <wx/gbsizer.h>
 #include <wx/menu.h>
 #include <wx/bitmap.h>
@@ -35,13 +36,16 @@ class Spark : public wxFrame
 	protected:
 		wxRichTextCtrl* math_input;
 		wxRichTextCtrl* math_output;
+		wxScrollBar* math_scrollbar;
 		wxMenuBar* menubar;
 		wxMenu* file_menu_tab;
 		wxMenu* edit_menu_tab;
 		wxMenu* help_menu_tab;
 
 		// Virtual event handlers, overide them in your derived class
+		virtual void math_sync_scrollbar( wxKeyEvent& event ) { event.Skip(); }
 		virtual void math_input_evt( wxCommandEvent& event ) { event.Skip(); }
+		virtual void math_scroll_evt( wxScrollEvent& event ) { event.Skip(); }
 
 
 	public:

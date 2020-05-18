@@ -25,11 +25,18 @@ class SparkCalc : public Spark
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
         void math_input_evt(wxCommandEvent& event);
+        void sync_all_scrollbars();
+    
+        void math_sync_scrollbar( wxKeyEvent& event );
+        void math_scroll_evt( wxScrollEvent& event );
+        void math_scroll_up_evt( wxScrollEvent& event );
+        void math_scroll_down_evt( wxScrollEvent& event );
 
     private:
         wxRichTextAttr Standard_Input_Style;
         wxColour Input_Variable_Color;
         wxColour Default_Input_Color;
+        wxColour Answer_Color;
         wxDECLARE_EVENT_TABLE();
         
 };

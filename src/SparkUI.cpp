@@ -25,9 +25,11 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 
 	math_output = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxWANTS_CHARS );
 	math_output->SetFont( wxFont( 16, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("PT Mono") ) );
-	math_output->Enable( false );
 
-	gbSizer2->Add( math_output, wxGBPosition( 0, 3 ), wxGBSpan( 1, 1 ), wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT, 5 );
+	gbSizer2->Add( math_output, wxGBPosition( 0, 3 ), wxGBSpan( 1, 1 ), wxBOTTOM|wxEXPAND|wxTOP, 5 );
+
+	math_scrollbar = new wxScrollBar( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSB_VERTICAL );
+	gbSizer2->Add( math_scrollbar, wxGBPosition( 0, 4 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 
 
 	gbSizer2->AddGrowableCol( 0 );
@@ -86,14 +88,36 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	this->Connect( wxEVT_CHAR, wxKeyEventHandler( Spark::math_sync_scrollbar ) );
 	math_input->Connect( wxEVT_COMMAND_RICHTEXT_CHARACTER, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
 	math_input->Connect( wxEVT_COMMAND_RICHTEXT_DELETE, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_input->Connect( wxEVT_COMMAND_RICHTEXT_RETURN, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_LINEDOWN, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_PAGEUP, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_PAGEDOWN, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Connect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
 }
 
 Spark::~Spark()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_CHAR, wxKeyEventHandler( Spark::math_sync_scrollbar ) );
 	math_input->Disconnect( wxEVT_COMMAND_RICHTEXT_CHARACTER, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
 	math_input->Disconnect( wxEVT_COMMAND_RICHTEXT_DELETE, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_input->Disconnect( wxEVT_COMMAND_RICHTEXT_RETURN, wxCommandEventHandler( Spark::math_input_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_LINEDOWN, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_PAGEUP, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_PAGEDOWN, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
+	math_scrollbar->Disconnect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( Spark::math_scroll_evt ), NULL, this );
 
 }
