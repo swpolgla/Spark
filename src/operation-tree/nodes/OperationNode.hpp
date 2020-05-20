@@ -19,7 +19,9 @@ namespace Operations {
         int nodeType = -1;
         
     public:
-        
+        virtual ~OperationNode() {
+            clean();
+        }
         virtual double evaluate() = 0;
         
         virtual OperationNode* getLeft() {
@@ -44,14 +46,8 @@ namespace Operations {
         }
         
         virtual void clean() {
-            if(left != nullptr) {
-                left -> clean();
-                delete left;
-            }
-            if(right != nullptr) {
-                right -> clean();
-                delete right;
-            }
+            delete left;
+            delete right;
         }
     };
 enum {

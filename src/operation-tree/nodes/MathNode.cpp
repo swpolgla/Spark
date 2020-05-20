@@ -53,28 +53,3 @@ void MathNode::setLeft(OperationNode* _left) {
 void MathNode::setRight(OperationNode* _right) {
     OperationNode::setRight(_right);
 }
-
-void MathNode::clean() {
-    if(getLeft() != nullptr) {
-        getLeft() -> clean();
-        if(getLeft() -> getType() == value) {
-            ValueNode *node = (ValueNode*)getLeft();
-            delete node;
-        }
-        else {
-            MathNode *node = (MathNode*)getLeft();
-            delete node;
-        }
-    }
-    if(getRight() != nullptr) {
-        getRight() -> clean();
-        if(getRight() -> getType() == value) {
-            ValueNode *node = (ValueNode*)getRight();
-            delete node;
-        }
-        else {
-            MathNode *node = (MathNode*)getRight();
-            delete node;
-        }
-    }
-}

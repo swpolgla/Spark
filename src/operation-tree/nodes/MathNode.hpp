@@ -20,14 +20,13 @@ namespace Operations {
         OperationType type;
         
     public:
-        ~MathNode() {
-            clean();
+        virtual ~MathNode() {
+            
         }
         MathNode(OperationType _type);
-        double evaluate();
         void setLeft(OperationNode* _left);
         void setRight(OperationNode* _right);
-        void clean();
+        double evaluate();
     };
 }
 

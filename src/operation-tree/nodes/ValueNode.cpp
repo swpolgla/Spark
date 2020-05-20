@@ -12,6 +12,8 @@
 using namespace Operations;
 
 ValueNode::ValueNode() {
+    setLeft(nullptr);
+    setRight(nullptr);
     setValue(0);
     setType(value);
 }
@@ -20,29 +22,4 @@ void ValueNode::setValue(double _value) {
 }
 double ValueNode::evaluate() {
     return value;
-}
-
-void ValueNode::clean() {
-    if(getLeft() != nullptr) {
-        getLeft() -> clean();
-        if(getLeft() -> getType() == value) {
-            ValueNode *node = (ValueNode*)getLeft();
-            delete node;
-        }
-        else {
-            MathNode *node = (MathNode*)getLeft();
-            delete node;
-        }
-    }
-    if(getRight() != nullptr) {
-        getRight() -> clean();
-        if(getRight() -> getType() == value) {
-            ValueNode *node = (ValueNode*)getRight();
-            delete node;
-        }
-        else {
-            MathNode *node = (MathNode*)getRight();
-            delete node;
-        }
-    }
 }

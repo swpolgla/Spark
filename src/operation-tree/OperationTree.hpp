@@ -16,6 +16,7 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
+#include <string>
 #include "nodes/OperationNode.hpp"
 #include "nodes/MathNode.hpp"
 #include "nodes/ValueNode.hpp"

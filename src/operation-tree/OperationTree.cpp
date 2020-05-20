@@ -14,6 +14,27 @@ OperationTree::~OperationTree() {
     clean();
 }
 
+static void replaceAll(std::string& source, const std::string& from, const std::string& to)
+{
+    std::string newString;
+    newString.reserve(source.length());  // avoids a few memory allocations
+
+    std::string::size_type lastPos = 0;
+    std::string::size_type findPos;
+
+    while(std::string::npos != (findPos = source.find(from, lastPos)))
+    {
+        newString.append(source, lastPos, findPos - lastPos);
+        newString += to;
+        lastPos = findPos + from.length();
+    }
+
+    // Care for the rest after last occurrence
+    newString += source.substr(lastPos);
+
+    source.swap(newString);
+}
+
 static std::string replaceMathConstants(std::string _input) {
     std::map<std::string, double> constantsMap;
     constantsMap.insert(std::pair<std::string, double>("pi", M_PI));
@@ -21,25 +42,9 @@ static std::string replaceMathConstants(std::string _input) {
     
     std::map<std::string, double>::iterator it;
     for(it = constantsMap.begin(); it != constantsMap.end(); it++) {
-        size_t variableLocation = _input.find(it -> first);
-        if(variableLocation != std::string::npos) {
-            _input.erase(variableLocation, it -> first.length());
-            _input.insert(variableLocation, std::to_string(it -> second));
-        }
+        replaceAll(_input, it -> first, std::to_string(it -> second));
     }
     
-    return _input;
-}
-
-static std::string replaceDoubleNegatives(std::string _input) {
-    size_t index = _input.find("--");
-    while(index != std::string::npos) {
-        
-        _input.erase(index, 2);
-        _input.insert(index, "+");
-        
-        index = _input.find("--");
-    }
     return _input;
 }
 
@@ -58,9 +63,6 @@ static Operations::OperationNode* buildHelper(std::string input) {
     if(openCount != closeCount) {
         throw 31;
     }
-    
-    //Swap in math constants
-    input = replaceMathConstants(input);
     
     std::vector<int> parDepthList;
     int parDepth = 0;
@@ -177,7 +179,15 @@ void OperationTree::buildTree(std::string _input) {
         return;
     }
     
+    //Delete spaces from input
     _input.erase(remove_if(_input.begin(), _input.end(), isspace), _input.end());
+    
+    //Replace % with multiplication equivalent
+    if(_input.find('%') != std::string::npos) {
+        replaceAll(_input, "%", "*0.01");
+    }
+    
+    _input = replaceMathConstants(_input);
     
     head = buildHelper(_input);
 }
@@ -193,14 +203,7 @@ double OperationTree::evaluate(std::string _input) {
 
 void OperationTree::clean() {
     if(head != nullptr) {
-        if(head -> getType() == value) {
-            ValueNode *node = (ValueNode*)head;
-            delete node;
-        }
-        else {
-            MathNode *node = (MathNode*)head;
-            delete node;
-        }
+        delete head;
         head = nullptr;
     }
 }
