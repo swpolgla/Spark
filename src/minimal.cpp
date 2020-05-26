@@ -48,12 +48,11 @@ bool MyApp::OnInit()
         return false;
 
     // create the main application window
-    SparkCalc *frame2 = new SparkCalc(nullptr);
+    SparkCalc *frame = new SparkCalc(nullptr);
 
     // and show it (the frames, unlike simple controls, are not shown when
     // created initially)
-    //frame->Show(true);
-    frame2->Show(true);
+    frame->Show(true);
 
     // success: wxApp::OnRun() will be called which will enter the main message
     // loop and the application will run. If we returned false here, the

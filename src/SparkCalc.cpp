@@ -12,6 +12,8 @@ Spark( parent, -1, "Spark Calc" )
     
     Answer_Color.Set(103, 230, 0);
     
+    Function_Color.Set(107, 154, 255);
+    
     math_output -> GetCaret() -> Hide();
     
     math_input -> ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
@@ -114,6 +116,36 @@ void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
             lineStart++;
             continue;
         }
+        
+        //Color all trig functions
+        Standard_Input_Style.SetTextColour(Function_Color);
+        std::string trigSearch = originalLine;
+        std::transform(trigSearch.begin(), trigSearch.end(), trigSearch.begin(), ::tolower);
+        size_t sinLocation = 0;
+        while(sinLocation != std::string::npos) {
+            sinLocation = originalLine.find("sin", sinLocation);
+            if(sinLocation != std::string::npos) {
+                math_input -> SetStyle(lineStart + sinLocation, lineStart + sinLocation + 3, Standard_Input_Style);
+                sinLocation++;
+            }
+        }
+        size_t cosLocation = 0;
+        while(cosLocation != std::string::npos) {
+            cosLocation = originalLine.find("cos", cosLocation);
+            if(cosLocation != std::string::npos) {
+                math_input -> SetStyle(lineStart + cosLocation, lineStart + cosLocation + 3, Standard_Input_Style);
+                cosLocation++;
+            }
+        }
+        size_t tanLocation = 0;
+        while(tanLocation != std::string::npos) {
+            tanLocation = originalLine.find("tan", tanLocation);
+            if(tanLocation != std::string::npos) {
+                math_input -> SetStyle(lineStart + tanLocation, lineStart + tanLocation + 3, Standard_Input_Style);
+                tanLocation++;
+            }
+        }
+        Standard_Input_Style.SetTextColour(Default_Input_Color);
         
         double eval = 0;
         

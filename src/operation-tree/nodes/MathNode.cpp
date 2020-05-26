@@ -15,7 +15,6 @@ MathNode::MathNode(OperationType _type) {
     setLeft(nullptr);
     setRight(nullptr);
     type = _type;
-    setType(math);
 }
 
 double MathNode::evaluate() {
@@ -42,6 +41,18 @@ double MathNode::evaluate() {
             return left + right;
         case subtraction:
             return left - right;
+        case sine:
+            return sin(left);
+        case cosine:
+            return cos(left);
+        case tangent:
+            return tan(left);
+        case sineh:
+            return sinh(left);
+        case cosineh:
+            return cosh(left);
+        case tangenth:
+            return tanh(left);
         default:
             throw 31;
     }

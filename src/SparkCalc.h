@@ -80,6 +80,8 @@ class SparkCalc : public Spark
         wxColour Default_Input_Color;
         /** The color of all text in math_output */
         wxColour Answer_Color;
+        /** The text color used by math/trig functions */
+        wxColour Function_Color;
         wxDECLARE_EVENT_TABLE();
         
 };

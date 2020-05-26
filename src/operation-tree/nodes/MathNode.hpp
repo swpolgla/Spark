@@ -12,7 +12,7 @@
 #include <math.h>
 #include "OperationNode.hpp"
 
-enum OperationType { parentheses, exponent, multiplication, division, addition, subtraction };
+enum OperationType { parentheses, exponent, multiplication, division, addition, subtraction, sine, cosine, tangent, sineh, cosineh, tangenth };
 
 namespace Operations {
     class MathNode : public OperationNode {

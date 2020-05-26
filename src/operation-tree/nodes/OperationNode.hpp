@@ -16,7 +16,6 @@ namespace Operations {
     private:
         OperationNode *left = nullptr;
         OperationNode *right = nullptr;
-        int nodeType = -1;
         
     public:
         virtual ~OperationNode() {
@@ -37,23 +36,11 @@ namespace Operations {
             right = _right;
         }
         
-        virtual int getType() {
-            return nodeType;
-        }
-        
-        virtual void setType(int type) {
-            nodeType = type;
-        }
-        
         virtual void clean() {
             delete left;
             delete right;
         }
     };
-enum {
-    value = 0,
-    math = 1
-};
 }
 
 #endif /* OperationNode_hpp */

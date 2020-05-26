@@ -36,6 +36,41 @@ namespace Operations {
             @param _input the string to build a tree of
          */
         void buildTree(std::string _input);
+        
+        /**
+           Parses an input string for the lowest priority addition or subtraction operation if present.
+           Recursively builds a subtree of all inputs into the operation.
+           @param input the string to parse
+           @return the root node of the sub tree
+        */
+        Operations::OperationNode *ParseAdditionAndSubtraction(std::string &input, std::vector<int> &parDepthList);
+        
+        /**
+           Parses an input string for the lowest priority multiplication or division operation if present.
+           Recursively builds a subtree of all inputs into the operation.
+           @param input the string to parse
+           @return the root node of the sub tree
+        */
+        Operations::OperationNode *ParseMultiplicationAndDivision(const std::string &input, std::vector<int> &parDepthList);
+        
+        /**
+           Parses an input string for the highest priority exponent operation if present. Recursively builds
+           a subtree of all inputs into the operation.
+           @param input the string to parse
+           @return the root node of the sub tree
+        */
+        Operations::OperationNode *ParseExponents(const std::string &input, std::vector<int> &parDepthList);
+        
+        /**
+           Parses an input string for any trig operations if present. Recursively builds a subtree
+           of whatever is being input into the trig function and returns the root node of that subtree.
+           @param input the string to parse
+           @return the root node of the sub tree
+        */
+        Operations::OperationNode *ParseTrig(const std::string &input);
+        
+        OperationNode* buildHelper(std::string input);
+        
         void clean();
         
     public:

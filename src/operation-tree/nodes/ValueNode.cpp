@@ -15,7 +15,6 @@ ValueNode::ValueNode() {
     setLeft(nullptr);
     setRight(nullptr);
     setValue(0);
-    setType(value);
 }
 void ValueNode::setValue(double _value) {
     value = _value;

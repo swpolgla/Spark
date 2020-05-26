@@ -17,7 +17,7 @@ OperationTree::~OperationTree() {
 static void replaceAll(std::string& source, const std::string& from, const std::string& to)
 {
     std::string newString;
-    newString.reserve(source.length());  // avoids a few memory allocations
+    newString.reserve(source.length());
 
     std::string::size_type lastPos = 0;
     std::string::size_type findPos;
@@ -29,7 +29,6 @@ static void replaceAll(std::string& source, const std::string& from, const std::
         lastPos = findPos + from.length();
     }
 
-    // Care for the rest after last occurrence
     newString += source.substr(lastPos);
 
     source.swap(newString);
@@ -48,35 +47,26 @@ static std::string replaceMathConstants(std::string _input) {
     return _input;
 }
 
-/**
-    A helper method that recursively parses an input string in order to build it's equivalent operation tree.
-    It parses input with respect to PEMDAS order of operations. The resulting tree contains ValueNodes
-    as leaves (assuming the input is valid) and the highest priority operations appear at the lowest levels
-    of the tree. The lowest priority operation in the input is the root node.
- */
-static Operations::OperationNode* buildHelper(std::string input) {
+void OperationTree::buildTree(std::string _input) {
     
-    //If parentheses are detected, substring the things between them and build another tree out of it.
-    std::size_t openCount = std::count(input.begin(), input.end(), '(');
-    std::size_t closeCount = std::count(input.begin(), input.end(), ')');
-    
-    if(openCount != closeCount) {
-        throw 31;
+    if(_input.empty()) {
+        return;
     }
     
-    std::vector<int> parDepthList;
-    int parDepth = 0;
-    for(auto it = input.begin(); it != input.end(); it++) {
-        if(*it == '(') {
-            parDepth++;
-        }
-        else if(*it == ')') {
-            parDepth--;
-        }
-        parDepthList.push_back(parDepth);
+    //Delete spaces from input
+    _input.erase(remove_if(_input.begin(), _input.end(), isspace), _input.end());
+    
+    //Replace % with multiplication equivalent
+    if(_input.find('%') != std::string::npos) {
+        replaceAll(_input, "%", "*0.01");
     }
     
-    //Begin parsing all inputs
+    _input = replaceMathConstants(_input);
+    
+    head = buildHelper(_input);
+}
+
+OperationNode* OperationTree::ParseAdditionAndSubtraction(std::string &input, std::vector<int> &parDepthList) {
     std::size_t subidx = input.find_last_of('-');
     while(subidx != std::string::npos && parDepthList[subidx] != 0) {
         subidx = input.find_last_of('-', subidx - 1);
@@ -86,22 +76,6 @@ static Operations::OperationNode* buildHelper(std::string input) {
     while(addidx != std::string::npos && parDepthList[addidx] != 0) {
         addidx = input.find_last_of('+', addidx - 1);
     }
-    
-    std::size_t dividx = input.find_last_of('/');
-    while(dividx != std::string::npos && parDepthList[dividx] != 0) {
-        dividx = input.find_last_of('/', dividx - 1);
-    }
-    
-    std::size_t mulidx = input.find_last_of('*');
-    while(mulidx != std::string::npos && parDepthList[mulidx] != 0) {
-        mulidx = input.find_last_of('*', mulidx - 1);
-    }
-    
-    std::size_t expidx = input.find_first_of('^');
-    while(expidx != std::string::npos && parDepthList[expidx] != 0) {
-        expidx = input.find_first_of('^', expidx + 1);
-    }
-    
     if(subidx != std::string::npos) {
         //This assists with determining if the dash is intended to be a negative sign
         //instead of a subtraction symbol. If it is intended to be a negative sign, then
@@ -128,6 +102,20 @@ static Operations::OperationNode* buildHelper(std::string input) {
         add -> setRight(buildHelper(input.substr(addidx + 1)));
         return add;
     }
+    
+    return nullptr;
+}
+
+Operations::OperationNode* OperationTree::ParseMultiplicationAndDivision(const std::string &input, std::vector<int> &parDepthList) {
+    std::size_t dividx = input.find_last_of('/');
+    while(dividx != std::string::npos && parDepthList[dividx] != 0) {
+        dividx = input.find_last_of('/', dividx - 1);
+    }
+    
+    std::size_t mulidx = input.find_last_of('*');
+    while(mulidx != std::string::npos && parDepthList[mulidx] != 0) {
+        mulidx = input.find_last_of('*', mulidx - 1);
+    }
     if(dividx != std::string::npos) {
         if(dividx > mulidx || mulidx == std::string::npos) {
             Operations::MathNode *div = new Operations::MathNode(division);
@@ -142,12 +130,124 @@ static Operations::OperationNode* buildHelper(std::string input) {
         mul -> setRight(buildHelper(input.substr(mulidx + 1)));
         return mul;
     }
+    
+    return nullptr;
+}
+
+OperationNode* OperationTree::ParseExponents(const std::string &input, std::vector<int> &parDepthList) {
+    std::size_t expidx = input.find_first_of('^');
+    while(expidx != std::string::npos && parDepthList[expidx] != 0) {
+        expidx = input.find_first_of('^', expidx + 1);
+    }
     if(expidx != std::string::npos) {
         Operations::MathNode *exp = new Operations::MathNode(exponent);
         exp -> setLeft(buildHelper(input.substr(0, expidx)));
         exp -> setRight(buildHelper(input.substr(expidx + 1)));
         return exp;
     }
+    
+    return nullptr;
+}
+
+OperationNode* OperationTree::ParseTrig(const std::string &input) {
+    std::string trig = input.substr(0, 4);
+    std::transform(trig.begin(), trig.end(), trig.begin(), ::tolower);
+    Operations::MathNode *trigNode = nullptr;
+    
+    if(trig.length() < 3) {
+        return nullptr;
+    }
+    
+    //Parse trig functions of length 4
+    if(trig.compare("sinh") == 0) {
+        trigNode = new Operations::MathNode(sineh);
+    }
+    else if(trig.compare("cosh") == 0) {
+        trigNode = new Operations::MathNode(cosineh);
+    }
+    else if(trig.compare("tanh") == 0) {
+        trigNode = new Operations::MathNode(tangenth);
+    }
+    if(trigNode != nullptr) {
+        //Math nodes can't have null children, but parentheses only care about the left child.
+        //Creating an empty value node for the right child keeps things working as intended.
+        Operations::ValueNode *empty = new Operations::ValueNode();
+        trigNode -> setLeft(buildHelper(input.substr(4)));
+        trigNode -> setRight(empty);
+        return trigNode;
+    }
+    
+    //Parse trig functions of length 3
+    trig.erase(trig.end() - 1);
+    if(trig.compare("sin") == 0) {
+        trigNode = new Operations::MathNode(sine);
+    }
+    else if(trig.compare("cos") == 0) {
+        trigNode = new Operations::MathNode(cosine);
+    }
+    else if(trig.compare("tan") == 0) {
+        trigNode = new Operations::MathNode(tangent);
+    }
+    if(trigNode != nullptr) {
+        //Math nodes can't have null children, but parentheses only care about the left child.
+        //Creating an empty value node for the right child keeps things working as intended.
+        Operations::ValueNode *empty = new Operations::ValueNode();
+        trigNode -> setLeft(buildHelper(input.substr(3)));
+        trigNode -> setRight(empty);
+    }
+    
+    return trigNode;
+}
+
+/**
+    A helper method that recursively parses an input string in order to build it's equivalent operation tree.
+    It parses input with respect to PEMDAS order of operations. The resulting tree contains ValueNodes
+    as leaves (assuming the input is valid) and the highest priority operations appear at the lowest levels
+    of the tree. The lowest priority operation in the input is the root node.
+ */
+OperationNode* OperationTree::buildHelper(std::string input) {
+    
+    //If parentheses are detected, substring the things between them and build another tree out of it.
+    std::size_t openCount = std::count(input.begin(), input.end(), '(');
+    std::size_t closeCount = std::count(input.begin(), input.end(), ')');
+    
+    if(openCount != closeCount) {
+        throw 31;
+    }
+    
+    std::vector<int> parDepthList;
+    int parDepth = 0;
+    for(auto it = input.begin(); it != input.end(); it++) {
+        if(*it == '(') {
+            parDepth++;
+        }
+        else if(*it == ')') {
+            parDepth--;
+        }
+        parDepthList.push_back(parDepth);
+    }
+    
+    //Begin parsing all inputs
+    OperationNode* addsub = ParseAdditionAndSubtraction(input, parDepthList);
+    if(addsub) {
+        return addsub;
+    }
+    
+    OperationNode* muldiv = ParseMultiplicationAndDivision(input, parDepthList);
+    if(muldiv) {
+        return muldiv;
+    }
+    
+    OperationNode* exponent = ParseExponents(input, parDepthList);
+    if(exponent) {
+        return exponent;
+    }
+    
+    OperationNode* trig = ParseTrig(input);
+    if(trig) {
+        return trig;
+    }
+    
     if(input.front() == '(' && input.back() == ')') {
         Operations::MathNode *par = new Operations::MathNode(parentheses);
         //Math nodes can't have null children, but parentheses only care about the left child.
@@ -171,25 +271,6 @@ static Operations::OperationNode* buildHelper(std::string input) {
     }
     
     return nullptr;
-}
-
-void OperationTree::buildTree(std::string _input) {
-    
-    if(_input.empty()) {
-        return;
-    }
-    
-    //Delete spaces from input
-    _input.erase(remove_if(_input.begin(), _input.end(), isspace), _input.end());
-    
-    //Replace % with multiplication equivalent
-    if(_input.find('%') != std::string::npos) {
-        replaceAll(_input, "%", "*0.01");
-    }
-    
-    _input = replaceMathConstants(_input);
-    
-    head = buildHelper(_input);
 }
 
 double OperationTree::evaluate(std::string _input) {
