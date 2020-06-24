@@ -90,6 +90,9 @@ void SparkCalc::OnAbout(wxCommandEvent& WXUNUSED(event))
 void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
     Operations::OperationTree tree;
     
+    wxWindowUpdateLocker noUpdateInput(math_input);
+    wxWindowUpdateLocker noUpdateOutput(math_output);
+    
     this -> math_output -> Clear();
     this -> math_output -> ApplyAlignmentToSelection(wxTEXT_ALIGNMENT_RIGHT);
     
@@ -210,8 +213,8 @@ void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void SparkCalc::sync_all_scrollbars() {
-    math_input -> Freeze();
-    math_output -> Freeze();
+    wxWindowUpdateLocker noUpdateInput(math_input);
+    wxWindowUpdateLocker noUpdateOutput(math_output);
     
     math_input -> ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     math_output->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
@@ -230,11 +233,7 @@ void SparkCalc::sync_all_scrollbars() {
     
     math_input -> ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     
-    math_input -> Thaw();
-    
-    
     math_output->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
-    math_output->Thaw();
 }
 
 void SparkCalc::math_sync_scrollbar(wxKeyEvent& event) {

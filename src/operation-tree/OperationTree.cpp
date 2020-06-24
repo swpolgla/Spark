@@ -206,15 +206,6 @@ OperationNode* OperationTree::ParseTrig(const std::string &input) {
     of the tree. The lowest priority operation in the input is the root node.
  */
 OperationNode* OperationTree::buildHelper(std::string input) {
-    
-    //If parentheses are detected, substring the things between them and build another tree out of it.
-    std::size_t openCount = std::count(input.begin(), input.end(), '(');
-    std::size_t closeCount = std::count(input.begin(), input.end(), ')');
-    
-    if(openCount != closeCount) {
-        throw 31;
-    }
-    
     std::vector<int> parDepthList;
     int parDepth = 0;
     for(auto it = input.begin(); it != input.end(); it++) {
@@ -275,6 +266,13 @@ OperationNode* OperationTree::buildHelper(std::string input) {
 
 double OperationTree::evaluate(std::string _input) {
     clean();
+    
+    std::size_t openCount = std::count(_input.begin(), _input.end(), '(');
+    std::size_t closeCount = std::count(_input.begin(), _input.end(), ')');
+    if(openCount != closeCount) {
+        throw 31;
+    }
+    
     buildTree(_input);
     if(head != nullptr) {
         return head -> evaluate();
