@@ -35,6 +35,13 @@ class SparkCalc : public Spark
          */
         void OnAbout(wxCommandEvent& event);
     
+        void OnCut(wxCommandEvent& event);
+        void OnCopy(wxCommandEvent& event);
+        void OnPaste(wxCommandEvent& event);
+        void OnUndo(wxCommandEvent& event);
+        void OnRedo(wxCommandEvent& event);
+        void OnSelectAll(wxCommandEvent& event);
+    
         /**
             An event that's called whenever text is input into the math_input wxRichTextCtrl.
             @param event the event

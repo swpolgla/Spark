@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION "3.16.3")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MT")
 
 if(WIN32)
 	set(wxWidgets_ROOT_DIR C:/wxWidgets-3.1.3)
@@ -17,7 +19,7 @@ include(${wxWidgets_USE_FILE})
 include(sourcelist.cmake)
 
 if(WIN32)
-	add_executable("${PROJECT_NAME}" WIN32 "${sources)")
+	add_executable("${PROJECT_NAME}" WIN32 "${sources}")
 else()
 	add_executable("${PROJECT_NAME}" "${sources}")
 endif()

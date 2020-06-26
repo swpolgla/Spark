@@ -83,6 +83,29 @@ void SparkCalc::OnAbout(wxCommandEvent& WXUNUSED(event))
                  this);
 }
 
+void SparkCalc::OnCut(wxCommandEvent& event) {
+    math_input -> OnCut(event);
+    math_input_evt(event);
+}
+void SparkCalc::OnCopy(wxCommandEvent& event) {
+    math_input -> OnCopy(event);
+}
+void SparkCalc::OnPaste(wxCommandEvent& event) {
+    math_input -> OnPaste(event);
+    math_input_evt(event);
+}
+void SparkCalc::OnUndo(wxCommandEvent& event) {
+    math_input -> OnUndo(event);
+    math_input_evt(event);
+}
+void SparkCalc::OnRedo(wxCommandEvent& event) {
+    math_input -> OnRedo(event);
+    math_input_evt(event);
+}
+void SparkCalc::OnSelectAll(wxCommandEvent& event) {
+    math_input -> OnSelectAll(event);
+}
+
 /**
     This is run every time text is input into the math_input RichTextCtrl. For every line in the text box
     it builds an OperationTree, evaluates it, and places the output in the same line of the math_output RichTextCtrl.
@@ -247,4 +270,10 @@ void SparkCalc::math_sync_scrollbar(wxKeyEvent& event) {
 wxBEGIN_EVENT_TABLE(SparkCalc, wxFrame)
     EVT_MENU(Spark_Quit,  SparkCalc::OnQuit)
     EVT_MENU(Spark_About, SparkCalc::OnAbout)
+    EVT_MENU(wxID_CUT, SparkCalc::OnCut)
+    EVT_MENU(wxID_COPY, SparkCalc::OnCopy)
+    EVT_MENU(wxID_PASTE, SparkCalc::OnPaste)
+    EVT_MENU(wxID_UNDO, SparkCalc::OnUndo)
+    EVT_MENU(wxID_REDO, SparkCalc::OnRedo)
+    EVT_MENU(wxID_SELECTALL, SparkCalc::OnSelectAll)
 wxEND_EVENT_TABLE()
