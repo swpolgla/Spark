@@ -9,32 +9,17 @@ if(WIN32)
 	set(wxWidgets_ROOT_DIR C:/wxWidgets-3.1.3)
 endif()
 
+# wxWidgets Setup
 set(wxWidgets_USE_STATIC TRUE)
 find_package(wxWidgets COMPONENTS core base richtext html xml REQUIRED)
 
 include(${wxWidgets_USE_FILE})
+include(sourcelist.cmake)
 
 if(WIN32)
-add_executable( "${PROJECT_NAME}"
-		WIN32
-		"src/minimal.cpp"
-		"src/SparkCalc.cpp"
-		"src/SparkUI.cpp"
-		"src/operation-tree/OperationTree.cpp"
-		"src/operation-tree/nodes/OperationNode.cpp"
-		"src/operation-tree/nodes/MathNode.cpp"
-		"src/operation-tree/nodes/ValueNode.cpp"
-		)
+	add_executable("${PROJECT_NAME}" WIN32 "${sources)")
 else()
-add_executable( "${PROJECT_NAME}" 
-		"src/minimal.cpp"
-		"src/SparkCalc.cpp"
-		"src/SparkUI.cpp"
-		"src/operation-tree/OperationTree.cpp"
-		"src/operation-tree/nodes/OperationNode.cpp"
-		"src/operation-tree/nodes/MathNode.cpp"
-		"src/operation-tree/nodes/ValueNode.cpp"
-		)
+	add_executable("${PROJECT_NAME}" "${sources}")
 endif()
 
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
