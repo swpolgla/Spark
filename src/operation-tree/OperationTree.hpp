@@ -13,6 +13,7 @@
 #include <iostream>
 #include <stack>
 #include <map>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
 #include <vector>
