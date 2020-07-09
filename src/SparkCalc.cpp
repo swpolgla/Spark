@@ -19,8 +19,8 @@ Spark( parent, -1, "Spark Calc" )
     math_input -> ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     math_output -> ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     
-    math_input -> EnableImages(false);
-    math_output -> EnableImages(false);
+    //math_input -> EnableImages(false);
+    //math_output -> EnableImages(false);
     
     math_input->Connect( wxEVT_SCROLLWIN_TOP, wxScrollEventHandler( SparkCalc::math_scroll_up_evt ), NULL, this );
     math_input->Connect( wxEVT_SCROLLWIN_BOTTOM, wxScrollEventHandler( SparkCalc::math_scroll_down_evt ), NULL, this );
@@ -114,126 +114,17 @@ void SparkCalc::OnSelectAll(wxCommandEvent& event) {
     it builds an OperationTree, evaluates it, and places the output in the same line of the math_output RichTextCtrl.
  */
 void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
-    Operations::OperationTree tree;
-    
     wxWindowUpdateLocker noUpdateInput(math_input);
     wxWindowUpdateLocker noUpdateOutput(math_output);
     
-    this -> math_output -> Clear();
-    this -> math_output -> ApplyAlignmentToSelection(wxTEXT_ALIGNMENT_RIGHT);
-    
-    std::map<std::string, double> variableLookupTable;
-    std::string operationValues = "^*/+-.1234567890";
-    std::string alphabeticalValues = "abcdefghijklmnopqrstuvwxyz";
-    alphabeticalValues.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    
-    long lineStart = 0;
-    int lineCount = math_input -> GetNumberOfLines();
-    for(int x = 0; x < lineCount; x++) {
-        std::string originalLine = std::string(this -> math_input -> GetLineText(x));
-        std::string lineEval = std::string(this -> math_input -> GetLineText(x));
-        lineEval.erase(remove_if(lineEval.begin(), lineEval.end(), isspace), lineEval.end());
-        
-        //Applies the default text style to the entire line inside of the math_input RichTextCtrl.
-        //If you skip overriding the style every time, the variable text colors will begin to "bleed"
-        //out into surrounding lines and input which is bad.
-        Standard_Input_Style.SetTextColour(Default_Input_Color);
-        math_input -> SetStyle(lineStart, lineStart + math_input -> GetLineText(x).length(), Standard_Input_Style);
-        
-        if(lineEval.length() == 0) {
-            math_output -> AppendText('\n');
-            lineStart++;
-            continue;
-        }
-        
-        //Color all trig functions
-        Standard_Input_Style.SetTextColour(Function_Color);
-        std::string trigSearch = originalLine;
-        std::transform(trigSearch.begin(), trigSearch.end(), trigSearch.begin(), ::tolower);
-        size_t sinLocation = 0;
-        while(sinLocation != std::string::npos) {
-            sinLocation = originalLine.find("sin", sinLocation);
-            if(sinLocation != std::string::npos) {
-                math_input -> SetStyle(lineStart + sinLocation, lineStart + sinLocation + 3, Standard_Input_Style);
-                sinLocation++;
-            }
-        }
-        size_t cosLocation = 0;
-        while(cosLocation != std::string::npos) {
-            cosLocation = originalLine.find("cos", cosLocation);
-            if(cosLocation != std::string::npos) {
-                math_input -> SetStyle(lineStart + cosLocation, lineStart + cosLocation + 3, Standard_Input_Style);
-                cosLocation++;
-            }
-        }
-        size_t tanLocation = 0;
-        while(tanLocation != std::string::npos) {
-            tanLocation = originalLine.find("tan", tanLocation);
-            if(tanLocation != std::string::npos) {
-                math_input -> SetStyle(lineStart + tanLocation, lineStart + tanLocation + 3, Standard_Input_Style);
-                tanLocation++;
-            }
-        }
-        Standard_Input_Style.SetTextColour(Default_Input_Color);
-        
-        double eval = 0;
-        
-        //This bit determines if the line is intended to be a variable
-        //If it's intended to be a variable it will strip the variable naming
-        //out of the string, leaving only the math input behind, calculate
-        //the result of the math input, and add the variable name/result to the
-        //variableLookupTable.
-        //In the event an existing variable is used, that variable name is replaced
-        //with it's numerical value in the line string from the lookup table.
-        std::string varName = "";
-        size_t equalLocation = lineEval.find_first_of('=');
-        if(equalLocation != std::string::npos) {
-            if(lineEval.find_first_of(alphabeticalValues) < equalLocation) {
-                varName = lineEval.substr(0, equalLocation);
-                lineEval.erase(0, equalLocation + 1);
-            }
-            
-            //Add text color to input box as needed
-            size_t inputBoxEqualLocation = originalLine.find_first_of('=');
-            Standard_Input_Style.SetTextColour(Input_Variable_Color);
-            math_input -> SetStyle(lineStart, lineStart + inputBoxEqualLocation, Standard_Input_Style);
-        }
-        
-        std::map<std::string, double>::iterator it;
-        for(it = variableLookupTable.begin(); it != variableLookupTable.end(); it++) {
-            size_t variableLocation = lineEval.find(it -> first);
-            while(variableLocation != std::string::npos) {
-                lineEval.erase(variableLocation, it -> first.length());
-                lineEval.insert(variableLocation, std::to_string(it -> second));
-                variableLocation = lineEval.find(it -> first);
-            }
-        }
-        
-        try {
-            eval = tree.evaluate(lineEval);
-        } catch (int i) {
-            return;
-        }
-        
-        if(varName.length() > 0) {
-            variableLookupTable.insert(std::pair<std::string, double>(varName, eval));
-        }
-        
-        std::string line = std::to_string(eval);
-        line.erase(line.find_last_not_of('0') + 1);
-        if(line[line.length() - 1] == '.') {
-            line.erase(line.length() - 1);
-        }
-        
-        wxString lineString(line);
-        math_output -> BeginTextColour(Answer_Color);
-        math_output -> WriteText(line);
-        math_output -> EndTextColour();
-        math_output -> AppendText('\n');
-        lineStart += originalLine.length() + 1;
+    std::vector<std::string> lines;
+    for(int x = 0; x < math_input -> GetNumberOfLines(); x++) {
+        lines.push_back(math_input -> GetLineText(x).ToStdString());
     }
-    math_output -> Remove(math_output -> GetLastPosition() - 1, math_output -> GetLastPosition());
-    math_output -> GetCaret() -> Hide();
+    
+    math_output -> Clear();
+    
+    math_output -> AppendText(wxString(sheet.UpdateSheet(lines)));
     
     sync_all_scrollbars();
 }

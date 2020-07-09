@@ -44,7 +44,7 @@ namespace Operations {
            @param input the string to parse
            @return the root node of the sub tree
         */
-        Operations::OperationNode *ParseAdditionAndSubtraction(std::string &input, std::vector<int> &parDepthList);
+        Operations::OperationNode *ParseAdditionAndSubtraction(const std::string &input, std::vector<int> &parDepthList);
         
         /**
            Parses an input string for the lowest priority multiplication or division operation if present.

@@ -66,7 +66,7 @@ void OperationTree::buildTree(std::string _input) {
     head = buildHelper(_input);
 }
 
-OperationNode* OperationTree::ParseAdditionAndSubtraction(std::string &input, std::vector<int> &parDepthList) {
+OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::string &input, std::vector<int> &parDepthList) {
     std::size_t subidx = input.find_last_of('-');
     while(subidx != std::string::npos && parDepthList[subidx] != 0) {
         subidx = input.find_last_of('-', subidx - 1);
