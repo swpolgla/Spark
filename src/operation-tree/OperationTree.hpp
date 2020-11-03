@@ -36,7 +36,7 @@ namespace Operations {
             PEMDAS. The lowest priority operation is the root node for example.
             @param _input the string to build a tree of
          */
-        void buildTree(std::string _input);
+        void buildTree(std::wstring _input);
         
         /**
            Parses an input string for the lowest priority addition or subtraction operation if present.
@@ -44,7 +44,7 @@ namespace Operations {
            @param input the string to parse
            @return the root node of the sub tree
         */
-        Operations::OperationNode *ParseAdditionAndSubtraction(const std::string &input, std::vector<int> &parDepthList);
+        Operations::OperationNode *ParseAdditionAndSubtraction(const std::wstring &input, std::vector<int> &parDepthList);
         
         /**
            Parses an input string for the lowest priority multiplication or division operation if present.
@@ -52,7 +52,7 @@ namespace Operations {
            @param input the string to parse
            @return the root node of the sub tree
         */
-        Operations::OperationNode *ParseMultiplicationAndDivision(const std::string &input, std::vector<int> &parDepthList);
+        Operations::OperationNode *ParseMultiplicationAndDivision(const std::wstring &input, std::vector<int> &parDepthList);
         
         /**
            Parses an input string for the highest priority exponent operation if present. Recursively builds
@@ -60,7 +60,7 @@ namespace Operations {
            @param input the string to parse
            @return the root node of the sub tree
         */
-        Operations::OperationNode *ParseExponents(const std::string &input, std::vector<int> &parDepthList);
+        Operations::OperationNode *ParseExponents(const std::wstring &input, std::vector<int> &parDepthList);
         
         /**
            Parses an input string for any trig operations if present. Recursively builds a subtree
@@ -68,9 +68,9 @@ namespace Operations {
            @param input the string to parse
            @return the root node of the sub tree
         */
-        Operations::OperationNode *ParseTrig(const std::string &input);
+        Operations::OperationNode *ParseTrig(const std::wstring &input);
         
-        OperationNode* buildHelper(std::string input);
+        OperationNode* buildHelper(std::wstring input);
         
         void clean();
         
@@ -82,7 +82,7 @@ namespace Operations {
             @param _input the string of math input
             @return the evaluation of _input as a double
          */
-        double evaluate(std::string _input);
+        double evaluate(std::wstring _input);
     };
 }
 

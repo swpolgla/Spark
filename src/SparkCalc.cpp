@@ -19,9 +19,11 @@ Spark( parent, -1, "Spark Calc" )
     math_input -> ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     math_output -> ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     
-    //math_input -> EnableImages(false);
-    //math_output -> EnableImages(false);
+    // Prevents the program from crashing when text is dragged/dropped.
+    wxRichTextBuffer::AddHandler(new wxRichTextXMLHandler);
     
+    // These map all the possible scroll events to the custom events that handle scrolling the input/output
+    // text boxes at the same time. It's ugly but necessary for this functionality
     math_input->Connect( wxEVT_SCROLLWIN_TOP, wxScrollEventHandler( SparkCalc::math_scroll_up_evt ), NULL, this );
     math_input->Connect( wxEVT_SCROLLWIN_BOTTOM, wxScrollEventHandler( SparkCalc::math_scroll_down_evt ), NULL, this );
     math_input->Connect( wxEVT_SCROLLWIN_LINEUP, wxScrollEventHandler( SparkCalc::math_scroll_up_evt ), NULL, this );
@@ -117,14 +119,39 @@ void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
     wxWindowUpdateLocker noUpdateInput(math_input);
     wxWindowUpdateLocker noUpdateOutput(math_output);
     
-    std::vector<std::string> lines;
+    std::vector<std::wstring> lines;
     for(int x = 0; x < math_input -> GetNumberOfLines(); x++) {
-        lines.push_back(math_input -> GetLineText(x).ToStdString());
+        std::wstring line = math_input -> GetLineText(x).ToStdWstring();
+        lines.push_back(math_input -> GetLineText(x).ToStdWstring());
     }
     
     math_output -> Clear();
+    math_output -> ApplyAlignmentToSelection(wxTEXT_ALIGNMENT_RIGHT);
     
-    math_output -> AppendText(wxString(sheet.UpdateSheet(lines)));
+    math_output -> BeginTextColour(Answer_Color);
+    math_output -> WriteText(wxString(sheet.UpdateSheet(lines)));
+    math_output -> EndTextColour();
+    math_output -> GetCaret() -> Hide();
+    
+    
+    // Updates the style of the text in math_input to color variable names etc.
+    long lineStart = 0;
+    for(long x = 0; x < math_input->GetNumberOfLines(); x++) {
+        std::wstring line = math_input->GetLineText(x).ToStdWstring();
+        
+        long equal = line.find(L'=');
+        if(equal != std::wstring::npos) {
+            Standard_Input_Style.SetTextColour(Input_Variable_Color);
+            math_input->SetStyle(lineStart, lineStart + equal, Standard_Input_Style);
+            Standard_Input_Style.SetTextColour(Default_Input_Color);
+            math_input->SetStyle(lineStart + equal, lineStart + line.length() + 1, Standard_Input_Style);
+        }
+        else {
+            Standard_Input_Style.SetTextColour(Default_Input_Color);
+            math_input->SetStyle(lineStart, lineStart + line.length() + 1, Standard_Input_Style);
+        }
+        lineStart += line.length() + 1;
+    }
     
     sync_all_scrollbars();
 }

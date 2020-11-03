@@ -14,15 +14,15 @@ OperationTree::~OperationTree() {
     clean();
 }
 
-static void replaceAll(std::string& source, const std::string& from, const std::string& to)
+static void replaceAll(std::wstring& source, const std::wstring& from, const std::wstring& to)
 {
-    std::string newString;
+    std::wstring newString;
     newString.reserve(source.length());
 
-    std::string::size_type lastPos = 0;
-    std::string::size_type findPos;
+    std::wstring::size_type lastPos = 0;
+    std::wstring::size_type findPos;
 
-    while(std::string::npos != (findPos = source.find(from, lastPos)))
+    while(std::wstring::npos != (findPos = source.find(from, lastPos)))
     {
         newString.append(source, lastPos, findPos - lastPos);
         newString += to;
@@ -34,20 +34,20 @@ static void replaceAll(std::string& source, const std::string& from, const std::
     source.swap(newString);
 }
 
-static std::string replaceMathConstants(std::string _input) {
-    std::map<std::string, double> constantsMap;
-    constantsMap.insert(std::pair<std::string, double>("pi", M_PI));
-    constantsMap.insert(std::pair<std::string, double>("e", M_E));
+static std::wstring replaceMathConstants(std::wstring _input) {
+    std::map<std::wstring, double> constantsMap;
+    constantsMap.insert(std::pair<std::wstring, double>(L"pi", M_PI));
+    constantsMap.insert(std::pair<std::wstring, double>(L"e", M_E));
     
-    std::map<std::string, double>::iterator it;
+    std::map<std::wstring, double>::iterator it;
     for(it = constantsMap.begin(); it != constantsMap.end(); it++) {
-        replaceAll(_input, it -> first, std::to_string(it -> second));
+        replaceAll(_input, it -> first, std::to_wstring(it -> second));
     }
     
     return _input;
 }
 
-void OperationTree::buildTree(std::string _input) {
+void OperationTree::buildTree(std::wstring _input) {
     
     if(_input.empty()) {
         return;
@@ -57,8 +57,8 @@ void OperationTree::buildTree(std::string _input) {
     _input.erase(remove_if(_input.begin(), _input.end(), isspace), _input.end());
     
     //Replace % with multiplication equivalent
-    if(_input.find('%') != std::string::npos) {
-        replaceAll(_input, "%", "*0.01");
+    if(_input.find('%') != std::wstring::npos) {
+        replaceAll(_input, L"%", L"*0.01");
     }
     
     _input = replaceMathConstants(_input);
@@ -66,17 +66,17 @@ void OperationTree::buildTree(std::string _input) {
     head = buildHelper(_input);
 }
 
-OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::string &input, std::vector<int> &parDepthList) {
+OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::wstring &input, std::vector<int> &parDepthList) {
     std::size_t subidx = input.find_last_of('-');
-    while(subidx != std::string::npos && parDepthList[subidx] != 0) {
+    while(subidx != std::wstring::npos && parDepthList[subidx] != 0) {
         subidx = input.find_last_of('-', subidx - 1);
     }
     
     std::size_t addidx = input.find_last_of('+');
-    while(addidx != std::string::npos && parDepthList[addidx] != 0) {
+    while(addidx != std::wstring::npos && parDepthList[addidx] != 0) {
         addidx = input.find_last_of('+', addidx - 1);
     }
-    if(subidx != std::string::npos) {
+    if(subidx != std::wstring::npos) {
         //This assists with determining if the dash is intended to be a negative sign
         //instead of a subtraction symbol. If it is intended to be a negative sign, then
         //it will likely have a non numerical character on the left side of it or one won't
@@ -88,7 +88,7 @@ OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::string &inp
             //In the order of operations, subtraction is the last operation that should be
             //performed. However this is incorrect in specific cases such as "1-2+3"
             //In cases of mixed addition and subtraction you must evaluate left to right.
-            if(subidx > addidx || addidx == std::string::npos) {
+            if(subidx > addidx || addidx == std::wstring::npos) {
                 Operations::MathNode *sub = new Operations::MathNode(subtraction);
                 sub -> setLeft(buildHelper(input.substr(0, subidx)));
                 sub -> setRight(buildHelper(input.substr(subidx + 1)));
@@ -96,7 +96,7 @@ OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::string &inp
             }
         }
     }
-    if(addidx != std::string::npos) {
+    if(addidx != std::wstring::npos) {
         Operations::MathNode *add = new Operations::MathNode(addition);
         add -> setLeft(buildHelper(input.substr(0, addidx)));
         add -> setRight(buildHelper(input.substr(addidx + 1)));
@@ -106,25 +106,25 @@ OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::string &inp
     return nullptr;
 }
 
-Operations::OperationNode* OperationTree::ParseMultiplicationAndDivision(const std::string &input, std::vector<int> &parDepthList) {
+Operations::OperationNode* OperationTree::ParseMultiplicationAndDivision(const std::wstring &input, std::vector<int> &parDepthList) {
     std::size_t dividx = input.find_last_of('/');
-    while(dividx != std::string::npos && parDepthList[dividx] != 0) {
+    while(dividx != std::wstring::npos && parDepthList[dividx] != 0) {
         dividx = input.find_last_of('/', dividx - 1);
     }
     
     std::size_t mulidx = input.find_last_of('*');
-    while(mulidx != std::string::npos && parDepthList[mulidx] != 0) {
+    while(mulidx != std::wstring::npos && parDepthList[mulidx] != 0) {
         mulidx = input.find_last_of('*', mulidx - 1);
     }
-    if(dividx != std::string::npos) {
-        if(dividx > mulidx || mulidx == std::string::npos) {
+    if(dividx != std::wstring::npos) {
+        if(dividx > mulidx || mulidx == std::wstring::npos) {
             Operations::MathNode *div = new Operations::MathNode(division);
             div -> setLeft(buildHelper(input.substr(0, dividx)));
             div -> setRight(buildHelper(input.substr(dividx + 1)));
             return div;
         }
     }
-    if(mulidx != std::string::npos) {
+    if(mulidx != std::wstring::npos) {
         Operations::MathNode *mul = new Operations::MathNode(multiplication);
         mul -> setLeft(buildHelper(input.substr(0, mulidx)));
         mul -> setRight(buildHelper(input.substr(mulidx + 1)));
@@ -134,12 +134,12 @@ Operations::OperationNode* OperationTree::ParseMultiplicationAndDivision(const s
     return nullptr;
 }
 
-OperationNode* OperationTree::ParseExponents(const std::string &input, std::vector<int> &parDepthList) {
+OperationNode* OperationTree::ParseExponents(const std::wstring &input, std::vector<int> &parDepthList) {
     std::size_t expidx = input.find_first_of('^');
-    while(expidx != std::string::npos && parDepthList[expidx] != 0) {
+    while(expidx != std::wstring::npos && parDepthList[expidx] != 0) {
         expidx = input.find_first_of('^', expidx + 1);
     }
-    if(expidx != std::string::npos) {
+    if(expidx != std::wstring::npos) {
         Operations::MathNode *exp = new Operations::MathNode(exponent);
         exp -> setLeft(buildHelper(input.substr(0, expidx)));
         exp -> setRight(buildHelper(input.substr(expidx + 1)));
@@ -149,8 +149,8 @@ OperationNode* OperationTree::ParseExponents(const std::string &input, std::vect
     return nullptr;
 }
 
-OperationNode* OperationTree::ParseTrig(const std::string &input) {
-    std::string trig = input.substr(0, 4);
+OperationNode* OperationTree::ParseTrig(const std::wstring &input) {
+    std::wstring trig = input.substr(0, 4);
     std::transform(trig.begin(), trig.end(), trig.begin(), ::tolower);
     Operations::MathNode *trigNode = nullptr;
     
@@ -159,13 +159,13 @@ OperationNode* OperationTree::ParseTrig(const std::string &input) {
     }
     
     //Parse trig functions of length 4
-    if(trig.compare("sinh") == 0) {
+    if(trig.compare(L"sinh") == 0) {
         trigNode = new Operations::MathNode(sineh);
     }
-    else if(trig.compare("cosh") == 0) {
+    else if(trig.compare(L"cosh") == 0) {
         trigNode = new Operations::MathNode(cosineh);
     }
-    else if(trig.compare("tanh") == 0) {
+    else if(trig.compare(L"tanh") == 0) {
         trigNode = new Operations::MathNode(tangenth);
     }
     if(trigNode != nullptr) {
@@ -179,13 +179,13 @@ OperationNode* OperationTree::ParseTrig(const std::string &input) {
     
     //Parse trig functions of length 3
     trig.erase(trig.end() - 1);
-    if(trig.compare("sin") == 0) {
+    if(trig.compare(L"sin") == 0) {
         trigNode = new Operations::MathNode(sine);
     }
-    else if(trig.compare("cos") == 0) {
+    else if(trig.compare(L"cos") == 0) {
         trigNode = new Operations::MathNode(cosine);
     }
-    else if(trig.compare("tan") == 0) {
+    else if(trig.compare(L"tan") == 0) {
         trigNode = new Operations::MathNode(tangent);
     }
     if(trigNode != nullptr) {
@@ -205,7 +205,7 @@ OperationNode* OperationTree::ParseTrig(const std::string &input) {
     as leaves (assuming the input is valid) and the highest priority operations appear at the lowest levels
     of the tree. The lowest priority operation in the input is the root node.
  */
-OperationNode* OperationTree::buildHelper(std::string input) {
+OperationNode* OperationTree::buildHelper(std::wstring input) {
     std::vector<int> parDepthList;
     int parDepth = 0;
     for(auto it = input.begin(); it != input.end(); it++) {
@@ -264,7 +264,7 @@ OperationNode* OperationTree::buildHelper(std::string input) {
     return nullptr;
 }
 
-double OperationTree::evaluate(std::string _input) {
+double OperationTree::evaluate(std::wstring _input) {
     clean();
     
     std::size_t openCount = std::count(_input.begin(), _input.end(), '(');

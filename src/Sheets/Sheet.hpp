@@ -14,19 +14,15 @@
 #include <string>
 #include <set>
 #include <vector>
-#include "LineData.hpp"
 #include "../operation-tree/OperationTree.hpp"
 
 namespace Sheets {
     class Sheet {
         private:
-            std::vector<LineData*> lines;
-            std::map<std::string, long> variables;
-        
-            void RebuildLine(LineData* _line);
+            std::map<std::wstring, double, std::greater<std::wstring>> variables;
         
         public:
-            std::string UpdateSheet(const std::vector<std::string> _lines);
+            std::wstring UpdateSheet(const std::vector<std::wstring> _lines);
     };
 }
 
