@@ -37,10 +37,8 @@ static bool replaceAll(std::wstring& source, const std::wstring& from, const std
 static std::wstring formatDecimal(double value) {
     std::wstring result = std::to_wstring(value);
     
-    result.erase(result.find_last_not_of(L'0') + 1);
-    if(result[result.length() - 1] == L'.') {
-        result.erase(result.length() - 1);
-    }
+    long pos = result.find_last_not_of(L'0');
+    result.erase(result[pos] == L'.' ? pos : pos + 1);
     
     return result;
 }
