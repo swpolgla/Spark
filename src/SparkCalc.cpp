@@ -69,8 +69,6 @@ void SparkCalc::math_scroll_down_evt(wxScrollEvent& event) {
 
 void SparkCalc::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
-    // Ensure that any copied text remains in the clipboard after the the program exits.
-    wxClipboard::Get() -> Flush();
     // true is to force the frame to close
     Close(true);
 }

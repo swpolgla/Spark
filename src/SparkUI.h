@@ -17,10 +17,10 @@
 #include <wx/string.h>
 #include <wx/scrolbar.h>
 #include <wx/gbsizer.h>
-#include <wx/menu.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
+#include <wx/menu.h>
 #include <wx/frame.h>
 
 ///////////////////////////////////////////////////////////////////////////

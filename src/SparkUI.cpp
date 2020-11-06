@@ -18,12 +18,12 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 	gbSizer2->SetFlexibleDirection( wxBOTH );
 	gbSizer2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	math_input = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxBORDER_NONE/*|wxWANTS_CHARS*/ );
+	math_input = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxWANTS_CHARS );
 	math_input->SetFont( wxFont( 16, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("PT Mono") ) );
 
 	gbSizer2->Add( math_input, wxGBPosition( 0, 0 ), wxGBSpan( 1, 3 ), wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-	math_output = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY/*|wxWANTS_CHARS*/ );
+	math_output = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxWANTS_CHARS );
 	math_output->SetFont( wxFont( 16, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("PT Mono") ) );
 
 	gbSizer2->Add( math_output, wxGBPosition( 0, 3 ), wxGBSpan( 1, 1 ), wxBOTTOM|wxEXPAND|wxTOP, 5 );
@@ -42,6 +42,10 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 	this->Layout();
 	menubar = new wxMenuBar( 0 );
 	file_menu_tab = new wxMenu();
+	wxMenuItem* file_menu_exit;
+	file_menu_exit = new wxMenuItem( file_menu_tab, wxID_EXIT, wxString( wxT("E&xit\tAlt+X") ) , wxT("Quit this program"), wxITEM_NORMAL );
+	file_menu_tab->Append( file_menu_exit );
+
 	menubar->Append( file_menu_tab, wxT("File") );
 
 	edit_menu_tab = new wxMenu();
@@ -77,7 +81,7 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 
 	help_menu_tab = new wxMenu();
 	wxMenuItem* help_menu_about;
-	help_menu_about = new wxMenuItem( help_menu_tab, wxID_ABOUT, wxString( wxT("&About\tF1") ) , wxEmptyString, wxITEM_NORMAL );
+	help_menu_about = new wxMenuItem( help_menu_tab, wxID_ABOUT, wxString( wxT("&About\tF1") ) , wxT("Show about dialog"), wxITEM_NORMAL );
 	help_menu_tab->Append( help_menu_about );
 
 	menubar->Append( help_menu_tab, wxT("Help") );
