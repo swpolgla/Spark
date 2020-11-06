@@ -9,17 +9,18 @@
 #ifndef OperationTree_hpp
 #define OperationTree_hpp
 
-#include <stdio.h>
-#include <iostream>
-#include <stack>
-#include <map>
 #define _USE_MATH_DEFINES
-#include <cmath>
+
 #include <algorithm>
-#include <vector>
+#include <cmath>
+#include <iostream>
+#include <map>
+#include <stack>
+#include <stdio.h>
 #include <string>
-#include "nodes/OperationNode.hpp"
+#include <vector>
 #include "nodes/MathNode.hpp"
+#include "nodes/OperationNode.hpp"
 #include "nodes/ValueNode.hpp"
 
 namespace Operations {

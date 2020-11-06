@@ -99,5 +99,7 @@ std::wstring Sheet::UpdateSheet(const std::vector<std::wstring> _lines) {
         }
         output.push_back('\n');
     }
+    // Removes the last unnecessary newline from the output.
+    output.erase(output.length() - 1);
     return output;
 }

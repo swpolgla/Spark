@@ -69,6 +69,8 @@ void SparkCalc::math_scroll_down_evt(wxScrollEvent& event) {
 
 void SparkCalc::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
+    // Ensure that any copied text remains in the clipboard after the the program exits.
+    wxClipboard::Get() -> Flush();
     // true is to force the frame to close
     Close(true);
 }
@@ -79,7 +81,7 @@ void SparkCalc::OnAbout(wxCommandEvent& WXUNUSED(event))
                  (
                     "Welcome to Spark Calculator!\n"
                     "\n"
-                    "This is version 0.0.1a "
+                    "This is version 0.0.2a "
                     "running under %s.",
                     wxGetOsDescription()
                  ),
@@ -88,37 +90,51 @@ void SparkCalc::OnAbout(wxCommandEvent& WXUNUSED(event))
                  this);
 }
 
-void SparkCalc::OnCut(wxCommandEvent& event) {
-    math_input -> OnCut(event);
-    math_input_evt(event);
-}
-void SparkCalc::OnCopy(wxCommandEvent& event) {
-    math_input -> OnCopy(event);
-}
-void SparkCalc::OnPaste(wxCommandEvent& event) {
-    math_input -> OnPaste(event);
-    math_input_evt(event);
-}
-void SparkCalc::OnUndo(wxCommandEvent& event) {
-    math_input -> OnUndo(event);
-    math_input_evt(event);
-}
-void SparkCalc::OnRedo(wxCommandEvent& event) {
-    math_input -> OnRedo(event);
-    math_input_evt(event);
-}
-void SparkCalc::OnSelectAll(wxCommandEvent& event) {
-    math_input -> OnSelectAll(event);
+wxRichTextCtrl *SparkCalc::GetFocusedText() {
+    wxWindow *win = FindFocus();
+    return win ? wxDynamicCast(win, wxRichTextCtrl) : NULL;
 }
 
-/**
-    This is run every time text is input into the math_input RichTextCtrl. For every line in the text box
-    it builds an OperationTree, evaluates it, and places the output in the same line of the math_output RichTextCtrl.
- */
-void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
-    wxWindowUpdateLocker noUpdateInput(math_input);
-    wxWindowUpdateLocker noUpdateOutput(math_output);
-    
+void SparkCalc::OnCut(wxCommandEvent& event) {
+    wxRichTextCtrl *text = GetFocusedText();
+    if(text) {
+        text -> OnCut(event);
+        math_input_evt(event);
+    }
+}
+void SparkCalc::OnCopy(wxCommandEvent& event) {
+    wxRichTextCtrl *text = GetFocusedText();
+    if(text)
+        text -> OnCopy(event);
+}
+void SparkCalc::OnPaste(wxCommandEvent& event) {
+    wxRichTextCtrl *text = GetFocusedText();
+    if(text) {
+        text -> OnPaste(event);
+        math_input_evt(event);
+    }
+}
+void SparkCalc::OnUndo(wxCommandEvent& event) {
+    wxRichTextCtrl *text = GetFocusedText();
+    if(text) {
+        text -> Undo();
+        ProcessInput();
+    }
+}
+void SparkCalc::OnRedo(wxCommandEvent& event) {
+    wxRichTextCtrl *text = GetFocusedText();
+    if(text) {
+        text -> Redo();
+        ProcessInput();
+    }
+}
+void SparkCalc::OnSelectAll(wxCommandEvent& event) {
+    wxRichTextCtrl *text = GetFocusedText();
+    if(text)
+        text -> OnSelectAll(event);
+}
+
+void SparkCalc::ProcessInput() {
     std::vector<std::wstring> lines;
     for(int x = 0; x < math_input -> GetNumberOfLines(); x++) {
         std::wstring line = math_input -> GetLineText(x).ToStdWstring();
@@ -135,6 +151,7 @@ void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
     
     
     // Updates the style of the text in math_input to color variable names etc.
+    math_input -> BeginSuppressUndo();
     long lineStart = 0;
     for(long x = 0; x < math_input->GetNumberOfLines(); x++) {
         std::wstring line = math_input->GetLineText(x).ToStdWstring();
@@ -152,8 +169,18 @@ void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
         }
         lineStart += line.length() + 1;
     }
-    
+    math_input -> EndSuppressUndo();
     sync_all_scrollbars();
+}
+
+/**
+    This is run every time text is input into the math_input RichTextCtrl.
+ */
+void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
+    wxWindowUpdateLocker noUpdateInput(math_input);
+    wxWindowUpdateLocker noUpdateOutput(math_output);
+    
+    ProcessInput();
 }
 
 void SparkCalc::sync_all_scrollbars() {
