@@ -216,6 +216,16 @@ OperationNode* OperationTree::buildHelper(std::wstring input) {
             parDepth--;
         }
         parDepthList.push_back(parDepth);
+        
+        // Check for close parentheses with no matching open parentheses. Ex: ")("
+        if(parDepth < 0) {
+            throw 31;
+        }
+    }
+    // If parDepth is not 0 at the end of the string, then there aren't an equal number of
+    // open/close parentheses or there is an open parentheses with no matching close parentheses.
+    if(parDepth != 0) {
+        throw 31;
     }
     
     //Begin parsing all inputs

@@ -154,7 +154,7 @@ void SparkCalc::ProcessInput() {
     for(long x = 0; x < math_input->GetNumberOfLines(); x++) {
         std::wstring line = math_input->GetLineText(x).ToStdWstring();
         
-        long equal = line.find(L'=');
+        size_t equal = line.find(L'=');
         if(equal != std::wstring::npos) {
             Standard_Input_Style.SetTextColour(Input_Variable_Color);
             math_input->SetStyle(lineStart, lineStart + equal, Standard_Input_Style);
