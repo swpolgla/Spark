@@ -37,7 +37,7 @@ static bool replaceAll(std::wstring& source, const std::wstring& from, const std
 static std::wstring formatDecimal(double value) {
     std::wstring result = std::to_wstring(value);
     
-    long pos = result.find_last_not_of(L'0');
+    size_t pos = result.find_last_not_of(L'0');
     result.erase(result[pos] == L'.' ? pos : pos + 1);
     
     return result;
@@ -53,7 +53,7 @@ std::wstring Sheet::UpdateSheet(const std::vector<std::wstring> _lines) {
         std::wstring line = _lines[x];
         line.erase(std::remove_if(line.begin(), line.end(), std::iswspace), line.end());
         
-        long equal = line.find_first_of('=');
+        size_t equal = line.find_first_of('=');
         if(equal != std::wstring::npos) {
             //Strip out the variable assignment and leave only the equation behind
             std::wstring varName = line.substr(0, equal);

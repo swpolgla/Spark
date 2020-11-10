@@ -132,6 +132,31 @@ void SparkCalc::OnSelectAll(wxCommandEvent& event) {
         text -> OnSelectAll(event);
 }
 
+void SparkCalc::SetVariableNameStyle() {
+    math_input -> BeginSuppressUndo();
+    long lineStart = 0;
+    for(long x = 0; x < math_input->GetNumberOfLines(); x++) {
+        std::wstring line = math_input->GetLineText(x).ToStdWstring();
+        
+        // The style used for variable names is a slight modification of the default style
+        wxRichTextAttr variableStyle(Standard_Input_Style);
+        variableStyle.SetTextColour(Input_Variable_Color);
+        variableStyle.SetFont(variableStyle.GetFont().MakeBold());
+        
+        size_t equal = line.find(L'=');
+        if(equal != std::wstring::npos) {
+            
+            math_input->SetStyle(lineStart, lineStart + equal, variableStyle);
+            math_input->SetStyle(lineStart + equal, lineStart + line.length() + 1, Standard_Input_Style);
+        }
+        else {
+            math_input->SetStyle(lineStart, lineStart + line.length() + 1, Standard_Input_Style);
+        }
+        lineStart += line.length() + 1;
+    }
+    math_input -> EndSuppressUndo();
+}
+
 void SparkCalc::ProcessInput() {
     std::vector<std::wstring> lines;
     for(int x = 0; x < math_input -> GetNumberOfLines(); x++) {
@@ -147,27 +172,8 @@ void SparkCalc::ProcessInput() {
     math_output -> EndTextColour();
     math_output -> GetCaret() -> Hide();
     
+    SetVariableNameStyle();
     
-    // Updates the style of the text in math_input to color variable names etc.
-    math_input -> BeginSuppressUndo();
-    long lineStart = 0;
-    for(long x = 0; x < math_input->GetNumberOfLines(); x++) {
-        std::wstring line = math_input->GetLineText(x).ToStdWstring();
-        
-        size_t equal = line.find(L'=');
-        if(equal != std::wstring::npos) {
-            Standard_Input_Style.SetTextColour(Input_Variable_Color);
-            math_input->SetStyle(lineStart, lineStart + equal, Standard_Input_Style);
-            Standard_Input_Style.SetTextColour(Default_Input_Color);
-            math_input->SetStyle(lineStart + equal, lineStart + line.length() + 1, Standard_Input_Style);
-        }
-        else {
-            Standard_Input_Style.SetTextColour(Default_Input_Color);
-            math_input->SetStyle(lineStart, lineStart + line.length() + 1, Standard_Input_Style);
-        }
-        lineStart += line.length() + 1;
-    }
-    math_input -> EndSuppressUndo();
     sync_all_scrollbars();
 }
 

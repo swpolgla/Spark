@@ -85,6 +85,10 @@ class SparkCalc : public Spark
     private:
         /** Determines whether the user currently has math_input or math_output selected. (Used for copy/paste inputs) */
         wxRichTextCtrl *GetFocusedText();
+        
+        /** Updates the color of variable name declarations in the math_input box to Input_Variable_Color */
+        void SetVariableNameStyle();
+    
         /** For every line in the text box it builds an OperationTree, evaluates it, and places the output in the same line of the math_output RichTextCtrl. */
         void ProcessInput();
     

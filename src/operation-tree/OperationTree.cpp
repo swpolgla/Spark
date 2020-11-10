@@ -277,12 +277,6 @@ OperationNode* OperationTree::buildHelper(std::wstring input) {
 double OperationTree::evaluate(std::wstring _input) {
     clean();
     
-    std::size_t openCount = std::count(_input.begin(), _input.end(), '(');
-    std::size_t closeCount = std::count(_input.begin(), _input.end(), ')');
-    if(openCount != closeCount) {
-        throw 31;
-    }
-    
     buildTree(_input);
     if(head != nullptr) {
         return head -> evaluate();
