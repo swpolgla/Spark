@@ -156,7 +156,7 @@ void SparkCalc::SetVariableNameStyle() {
         size_t equal = line.find(L'=');
         if(equal != std::wstring::npos) {
             std::wstring varName = line.substr(0, equal);
-            varName.erase(std::remove_if(varName.begin(), varName.end(), std::iswspace), line.end());
+            varName.erase(std::remove_if(varName.begin(), varName.end(), std::iswspace), varName.end());
             if(sheet.BannedVariableNameCheck(varName)) {
                 math_input->SetStyle(lineStart, lineStart + equal, bannedVariableStyle);
             }
