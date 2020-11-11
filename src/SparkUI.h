@@ -9,6 +9,8 @@
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
+class MathTextBox;
+
 #include <wx/richtext/richtextctrl.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
@@ -34,8 +36,8 @@ class Spark : public wxFrame
 	private:
 
 	protected:
-		wxRichTextCtrl* math_input;
-		wxRichTextCtrl* math_output;
+		MathTextBox* math_input;
+		MathTextBox* math_output;
 		wxScrollBar* math_scrollbar;
 		wxMenuBar* menubar;
 		wxMenu* file_menu_tab;

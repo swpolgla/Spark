@@ -52,6 +52,9 @@ class SparkCalc : public Spark
          */
         void math_input_evt(wxCommandEvent& event);
     
+        /** For every line in the text box it builds an OperationTree, evaluates it, and places the output in the same line of the math_output RichTextCtrl. */
+        void ProcessInput();
+    
         /**
             A method that syncs the scroll height between math_input and math_output, while also
             setting math_scrollbar to the correct scroll level.
@@ -88,9 +91,6 @@ class SparkCalc : public Spark
         
         /** Updates the color of variable name declarations in the math_input box to Input_Variable_Color */
         void SetVariableNameStyle();
-    
-        /** For every line in the text box it builds an OperationTree, evaluates it, and places the output in the same line of the math_output RichTextCtrl. */
-        void ProcessInput();
     
         /** The default sheet used for calculating input. Will eventually be replaced by a multi-sheet system. */
         Sheets::Sheet sheet;

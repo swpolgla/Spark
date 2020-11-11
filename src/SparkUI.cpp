@@ -5,6 +5,8 @@
 // PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
+#include "UI/MathTextBox.hpp"
+
 #include "SparkUI.h"
 
 ///////////////////////////////////////////////////////////////////////////
@@ -18,12 +20,12 @@ Spark::Spark( wxWindow* parent, wxWindowID id, const wxString& title, const wxPo
 	gbSizer2->SetFlexibleDirection( wxBOTH );
 	gbSizer2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	math_input = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxWANTS_CHARS );
+	math_input = new MathTextBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxWANTS_CHARS );
 	math_input->SetFont( wxFont( 16, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("PT Mono") ) );
 
 	gbSizer2->Add( math_input, wxGBPosition( 0, 0 ), wxGBSpan( 1, 3 ), wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-	math_output = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxWANTS_CHARS );
+	math_output = new MathTextBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxWANTS_CHARS );
 	math_output->SetFont( wxFont( 16, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("PT Mono") ) );
 
 	gbSizer2->Add( math_output, wxGBPosition( 0, 3 ), wxGBSpan( 1, 1 ), wxBOTTOM|wxEXPAND|wxTOP, 5 );

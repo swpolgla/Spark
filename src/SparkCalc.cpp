@@ -1,4 +1,5 @@
 #include "SparkCalc.h"
+#include "UI/MathTextBox.hpp"
 
 SparkCalc::SparkCalc( wxWindow* parent )
 :
@@ -48,6 +49,9 @@ Spark( parent, -1, "Spark Calc" )
     
     math_scrollbar -> SetScrollbar(math_input -> GetScrollPos(wxVERTICAL), math_input -> GetScrollThumb(wxVERTICAL), math_input -> GetScrollRange(wxVERTICAL), math_input -> GetScrollPageSize(wxVERTICAL));
     math_scrollbar -> Disable();
+    
+    math_input->parent = this;
+    math_output->parent = this;
 }
 
 void SparkCalc::math_scroll_evt(wxScrollEvent& event) {
@@ -158,6 +162,9 @@ void SparkCalc::SetVariableNameStyle() {
 }
 
 void SparkCalc::ProcessInput() {
+    wxWindowUpdateLocker noUpdateInput(math_input);
+    wxWindowUpdateLocker noUpdateOutput(math_output);
+    
     std::vector<std::wstring> lines;
     for(int x = 0; x < math_input -> GetNumberOfLines(); x++) {
         std::wstring line = math_input -> GetLineText(x).ToStdWstring();
@@ -181,9 +188,6 @@ void SparkCalc::ProcessInput() {
     This is run every time text is input into the math_input RichTextCtrl.
  */
 void SparkCalc::math_input_evt(wxCommandEvent& WXUNUSED(event)) {
-    wxWindowUpdateLocker noUpdateInput(math_input);
-    wxWindowUpdateLocker noUpdateOutput(math_output);
-    
     ProcessInput();
 }
 
