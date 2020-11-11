@@ -10,6 +10,37 @@
 
 using namespace Sheets;
 
+Sheet::Sheet() {
+    functionNames.insert(L"sin");
+    functionNames.insert(L"cos");
+    functionNames.insert(L"tan");
+    functionNames.insert(L"sinh");
+    functionNames.insert(L"cosh");
+    functionNames.insert(L"tanh");
+}
+
+bool Sheet::BannedVariableNameCheck(std::wstring name) {
+    std::transform(name.begin(), name.end(), name.begin(), ::towlower);
+    return functionNames.count(name) > 0;
+}
+
+std::vector<std::pair<size_t, size_t>> Sheet::FunctionNameLocations(std::wstring line) {
+    std::vector<std::pair<size_t, size_t>> positions;
+    
+    size_t equal = line.find_first_of(L'=');
+    if(equal == std::wstring::npos)
+        equal = 0;
+    for(auto const& x : functionNames) {
+        size_t pos = line.find(x, equal);
+        while(pos != std::wstring::npos) {
+            std::pair<size_t, size_t> pair(pos, x.length());
+            positions.push_back(pair);
+            pos = line.find(x, pos + 1);
+        }
+    }
+    return positions;
+}
+
 static bool replaceAll(std::wstring& source, const std::wstring& from, const std::wstring& to)
 {
     bool replaced = false;
@@ -57,6 +88,11 @@ std::wstring Sheet::UpdateSheet(const std::vector<std::wstring> _lines) {
         if(equal != std::wstring::npos) {
             //Strip out the variable assignment and leave only the equation behind
             std::wstring varName = line.substr(0, equal);
+            if(BannedVariableNameCheck(varName)) {
+                output.push_back('\n');
+                continue;
+            }
+            
             std::wstring equation = line.substr(equal + 1, line.length());
             replaceAll(equation, L"=", L"");
             

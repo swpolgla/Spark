@@ -92,12 +92,15 @@ class SparkCalc : public Spark
         /** Updates the color of variable name declarations in the math_input box to Input_Variable_Color */
         void SetVariableNameStyle();
     
+        void SetFunctionNameStyle();
+    
         /** The default sheet used for calculating input. Will eventually be replaced by a multi-sheet system. */
         Sheets::Sheet sheet;
         /** The default text style for the math_input wxRichTextCtrl. */
         wxRichTextAttr Standard_Input_Style;
         /** The text color used whenever a variable name is highlighted in math_input. */
         wxColour Input_Variable_Color;
+        wxColour Banned_Input_Variable_Color;
         /** The default text color used by math_input. */
         wxColour Default_Input_Color;
         /** The color of all text in math_output */

@@ -7,4 +7,5 @@ set(sources ${sources}
 	"src/operation-tree/nodes/MathNode.cpp"
 	"src/operation-tree/nodes/ValueNode.cpp"
 	"src/Sheets/Sheet.cpp"
+	"src/UI/MathTextBox.cpp"
 )

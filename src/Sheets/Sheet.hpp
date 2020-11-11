@@ -12,11 +12,25 @@
 #include <map>
 #include <stdio.h>
 #include <string>
+#include <set>
 #include <vector>
 #include "../operation-tree/OperationTree.hpp"
 
 namespace Sheets {
     class Sheet {
+        public:
+            Sheet();
+        
+            /** Checks if a variable name overlaps with any function names. Used by SparkCalc class. */
+            bool BannedVariableNameCheck(std::wstring name);
+            /** Finds the locations of function names within the line of text. Returns a pair. Pair represents <position_within_string, length_of_string_found> */
+            std::vector<std::pair<size_t, size_t>> FunctionNameLocations(std::wstring line);
+        
+            /** Accepts the latest input from the user, and recalculates all lines on the Sheet.
+                @return a fully formatted string of answers separated by line to be inserted into the math_output text box.
+             */
+            std::wstring UpdateSheet(const std::vector<std::wstring> _lines);
+        
         private:
             /** This is the temporary map of all variables defined by the user in the current sheet.
                 The key is the name of the variable, the value is the numerical value of the variable.
@@ -24,12 +38,7 @@ namespace Sheets {
                 other variable names will function properly.
              */
             std::map<std::wstring, double, std::greater<std::wstring>> variables;
-        
-        public:
-            /** Accepts the latest input from the user, and recalculates all lines on the Sheet.
-                @return a fully formatted string of answers separated by line to be inserted into the math_output text box.
-             */
-            std::wstring UpdateSheet(const std::vector<std::wstring> _lines);
+            std::set<std::wstring> functionNames;
     };
 }
 

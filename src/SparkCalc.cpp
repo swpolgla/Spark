@@ -11,6 +11,8 @@ Spark( parent, -1, "Spark Calc" )
     
     Input_Variable_Color.Set(52, 195, 235);
     
+    Banned_Input_Variable_Color.Set(201, 28, 28);
+    
     Answer_Color.Set(103, 230, 0);
     
     Function_Color.Set(107, 154, 255);
@@ -139,18 +141,28 @@ void SparkCalc::OnSelectAll(wxCommandEvent& event) {
 void SparkCalc::SetVariableNameStyle() {
     math_input -> BeginSuppressUndo();
     long lineStart = 0;
+    
+    // The styles used for variable names are a slight modification of the default style
+    wxRichTextAttr variableStyle(Standard_Input_Style);
+    variableStyle.SetTextColour(Input_Variable_Color);
+    variableStyle.SetFont(variableStyle.GetFont().MakeBold());
+    wxRichTextAttr bannedVariableStyle(variableStyle);
+    bannedVariableStyle.SetTextColour(Banned_Input_Variable_Color);
+    bannedVariableStyle.SetFont(variableStyle.GetFont().MakeStrikethrough());
+    
     for(long x = 0; x < math_input->GetNumberOfLines(); x++) {
         std::wstring line = math_input->GetLineText(x).ToStdWstring();
         
-        // The style used for variable names is a slight modification of the default style
-        wxRichTextAttr variableStyle(Standard_Input_Style);
-        variableStyle.SetTextColour(Input_Variable_Color);
-        variableStyle.SetFont(variableStyle.GetFont().MakeBold());
-        
         size_t equal = line.find(L'=');
         if(equal != std::wstring::npos) {
-            
-            math_input->SetStyle(lineStart, lineStart + equal, variableStyle);
+            std::wstring varName = line.substr(0, equal);
+            varName.erase(std::remove_if(varName.begin(), varName.end(), std::iswspace), line.end());
+            if(sheet.BannedVariableNameCheck(varName)) {
+                math_input->SetStyle(lineStart, lineStart + equal, bannedVariableStyle);
+            }
+            else {
+                math_input->SetStyle(lineStart, lineStart + equal, variableStyle);
+            }
             math_input->SetStyle(lineStart + equal, lineStart + line.length() + 1, Standard_Input_Style);
         }
         else {
@@ -159,6 +171,29 @@ void SparkCalc::SetVariableNameStyle() {
         lineStart += line.length() + 1;
     }
     math_input -> EndSuppressUndo();
+}
+
+void SparkCalc::SetFunctionNameStyle() {
+    math_input->BeginSuppressUndo();
+    long lineStart = 0;
+    
+    wxRichTextAttr functionStyle(Standard_Input_Style);
+    functionStyle.SetTextColour(Function_Color);
+    functionStyle.SetFont(functionStyle.GetFont().MakeBold());
+    
+    for(long x = 0; x < math_input->GetNumberOfLines(); x++) {
+        std::wstring line = math_input->GetLineText(x).ToStdWstring();
+        
+        std::vector<std::pair<size_t, size_t>> locations = sheet.FunctionNameLocations(line);
+        for(int x = 0; x < locations.size(); x++) {
+            math_input->SetStyle(lineStart + locations[x].first, lineStart + locations[x].first + locations[x].second, functionStyle);
+        }
+        
+        lineStart += line.length() + 1;
+    }
+    
+    
+    math_input->EndSuppressUndo();
 }
 
 void SparkCalc::ProcessInput() {
@@ -180,6 +215,7 @@ void SparkCalc::ProcessInput() {
     math_output -> GetCaret() -> Hide();
     
     SetVariableNameStyle();
+    SetFunctionNameStyle();
     
     sync_all_scrollbars();
 }
