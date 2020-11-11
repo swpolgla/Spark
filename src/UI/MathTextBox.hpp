@@ -12,7 +12,6 @@
 #include "wx/richtext/richtextctrl.h"
 #include "../SparkCalc.h"
 
-/** Implementing Spark */
 class MathTextBox : public wxRichTextCtrl
 {
 public:
@@ -23,7 +22,9 @@ public:
         
     }
 
-    /** Special Cut method. Does the same thing as wxRichTextCtrl::Cut() but also calls ProcessInput() in parent. */
+    /** Special Copy method. Does the same thing as wxRichTextCtrl::Copy() but also strips newline chars from the end of copied text */
+    void Copy() override;
+    /** Special Cut method. Does the same thing as wxRichTextCtrl::Cut() but also calls ProcessInput() in parent and strips newline chars from the end of copied text */
     void Cut() override;
     /** Special Paste method. Does the same thing as wxRichTextCtrl::Paste() but also calls ProcessInput() in parent. */
     void Paste() override;
