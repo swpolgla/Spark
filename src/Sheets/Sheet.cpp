@@ -107,14 +107,7 @@ std::wstring Sheet::UpdateSheet(const std::vector<std::wstring> _lines) {
                 //Do nothing
             }
             
-            std::pair<std::wstring, double> pair(varName, result);
-            
-            // Inserts or replaces the new variable pair in the variables map.
-            std::map<std::wstring, double, std::greater<std::wstring>>::iterator it = variables.find(varName);
-            if(it != variables.end()) {
-                variables.erase(it);
-            }
-            variables.insert(pair);
+            variables.insert_or_assign(varName, result);
             
             output.append(formatDecimal(result));
         }
