@@ -9,6 +9,7 @@
 #ifndef Sheet_hpp
 #define Sheet_hpp
 
+#include <cwctype>
 #include <map>
 #include <stdio.h>
 #include <string>
