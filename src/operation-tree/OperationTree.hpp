@@ -71,6 +71,12 @@ namespace Operations {
         */
         Operations::OperationNode *ParseTrig(const std::wstring &input);
         
+        /**
+            A helper method that recursively parses an input string in order to build it's equivalent operation tree.
+            It parses input with respect to PEMDAS order of operations. The resulting tree contains ValueNodes
+            as leaves (assuming the input is valid) and the highest priority operations appear at the lowest levels
+            of the tree. The lowest priority operation in the input is the root node.
+         */
         OperationNode* buildHelper(std::wstring input);
         
         void clean();

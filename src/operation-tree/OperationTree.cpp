@@ -53,10 +53,10 @@ void OperationTree::buildTree(std::wstring _input) {
         return;
     }
     
-    //Delete spaces from input
+    // Delete spaces from input
     _input.erase(remove_if(_input.begin(), _input.end(), isspace), _input.end());
     
-    //Replace % with multiplication equivalent
+    // Replace % with multiplication equivalent
     if(_input.find('%') != std::wstring::npos) {
         replaceAll(_input, L"%", L"*0.01");
     }
@@ -77,17 +77,17 @@ OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::wstring &in
         addidx = input.find_last_of('+', addidx - 1);
     }
     if(subidx != std::wstring::npos) {
-        //This assists with determining if the dash is intended to be a negative sign
-        //instead of a subtraction symbol. If it is intended to be a negative sign, then
-        //it will likely have a non numerical character on the left side of it or one won't
-        //exist at all.
-        //Ex: "3*-2" "-1"
-        //When it is known to be a negative sign, processing it should be deferred until after
-        //other operations have been processed.
+        // This assists with determining if the dash is intended to be a negative sign
+        // instead of a subtraction symbol. If it is intended to be a negative sign, then
+        // it will likely have a non numerical character on the left side of it or one won't
+        // exist at all.
+        // Ex: "3*-2" "-1"
+        // When it is known to be a negative sign, processing it should be deferred until after
+        // other operations have been processed.
         if(subidx - 1 >= 0 && (std::isalnum(input[subidx - 1]) != 0 || input[subidx - 1] == ')')) {
-            //In the order of operations, subtraction is the last operation that should be
-            //performed. However this is incorrect in specific cases such as "1-2+3"
-            //In cases of mixed addition and subtraction you must evaluate left to right.
+            // In the order of operations, subtraction is the last operation that should be
+            // performed. However this is incorrect in specific cases such as "1-2+3"
+            // In cases of mixed addition and subtraction you must evaluate left to right.
             if(subidx > addidx || addidx == std::wstring::npos) {
                 Operations::MathNode *sub = new Operations::MathNode(subtraction);
                 sub -> setLeft(buildHelper(input.substr(0, subidx)));
@@ -169,15 +169,15 @@ OperationNode* OperationTree::ParseTrig(const std::wstring &input) {
         trigNode = new Operations::MathNode(tangenth);
     }
     if(trigNode != nullptr) {
-        //Math nodes can't have null children, but parentheses only care about the left child.
-        //Creating an empty value node for the right child keeps things working as intended.
+        // Math nodes can't have null children, but trig functions only care about the left child.
+        // Creating an empty value node for the right child keeps things working as intended.
         Operations::ValueNode *empty = new Operations::ValueNode();
         trigNode -> setLeft(buildHelper(input.substr(4)));
         trigNode -> setRight(empty);
         return trigNode;
     }
     
-    //Parse trig functions of length 3
+    // Parse trig functions of length 3
     trig.erase(trig.end() - 1);
     if(trig.compare(L"sin") == 0) {
         trigNode = new Operations::MathNode(sine);
@@ -189,8 +189,8 @@ OperationNode* OperationTree::ParseTrig(const std::wstring &input) {
         trigNode = new Operations::MathNode(tangent);
     }
     if(trigNode != nullptr) {
-        //Math nodes can't have null children, but parentheses only care about the left child.
-        //Creating an empty value node for the right child keeps things working as intended.
+        // Math nodes can't have null children, but trig functions only care about the left child.
+        // Creating an empty value node for the right child keeps things working as intended.
         Operations::ValueNode *empty = new Operations::ValueNode();
         trigNode -> setLeft(buildHelper(input.substr(3)));
         trigNode -> setRight(empty);
@@ -199,12 +199,6 @@ OperationNode* OperationTree::ParseTrig(const std::wstring &input) {
     return trigNode;
 }
 
-/**
-    A helper method that recursively parses an input string in order to build it's equivalent operation tree.
-    It parses input with respect to PEMDAS order of operations. The resulting tree contains ValueNodes
-    as leaves (assuming the input is valid) and the highest priority operations appear at the lowest levels
-    of the tree. The lowest priority operation in the input is the root node.
- */
 OperationNode* OperationTree::buildHelper(std::wstring input) {
     std::vector<int> parDepthList;
     int parDepth = 0;
@@ -228,7 +222,7 @@ OperationNode* OperationTree::buildHelper(std::wstring input) {
         throw 31;
     }
     
-    //Begin parsing all inputs
+    // Begin parsing all inputs
     OperationNode* addsub = ParseAdditionAndSubtraction(input, parDepthList);
     if(addsub) {
         return addsub;
@@ -251,8 +245,8 @@ OperationNode* OperationTree::buildHelper(std::wstring input) {
     
     if(input.front() == '(' && input.back() == ')') {
         Operations::MathNode *par = new Operations::MathNode(parentheses);
-        //Math nodes can't have null children, but parentheses only care about the left child.
-        //Creating an empty value node for the right child keeps things working as intended.
+        // Math nodes can't have null children, but parentheses only care about the left child.
+        // Creating an empty value node for the right child keeps things working as intended.
         Operations::ValueNode *empty = new Operations::ValueNode();
         Operations::OperationNode *internal = buildHelper(input.substr(1, input.length() - 2));
         par -> setLeft(internal);
@@ -265,7 +259,7 @@ OperationNode* OperationTree::buildHelper(std::wstring input) {
             try {
                 value -> setValue(std::stod(input));
             } catch(const std::invalid_argument oor) {
-                //Do Nothing, the input was invalid and should be treated like a 0.
+                // Do Nothing, the input was invalid and should be treated like a 0.
             }
         }
         return value;

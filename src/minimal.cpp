@@ -27,6 +27,7 @@ public:
     // initialization (doing it here and not in the ctor allows to have an error
     // return: if OnInit() returns false, the application terminates)
     virtual bool OnInit(); //wxOVERRIDE;
+    virtual int OnQuit();
 };
 
 wxIMPLEMENT_APP(MyApp);
@@ -58,4 +59,15 @@ bool MyApp::OnInit()
     // loop and the application will run. If we returned false here, the
     // application would exit immediately.
     return true;
+}
+
+int MyApp::OnQuit() {
+    // This ensures that any text which was copied from the program is still present in the clipboard
+    // after terminating the program.
+    // This has to be put here because wxMSW propogates some events differently than other platforms.
+    if(wxTheClipboard->Open()) {
+        wxTheClipboard->Flush();
+        wxTheClipboard->Close();
+    }
+    return EXIT_SUCCESS;
 }

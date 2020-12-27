@@ -1,10 +1,7 @@
-//
-//  OperationNode.hpp
-//  spark-calc
-//
-//  Created by Steven Polglase on 5/8/20.
-//  Copyright © 2020 Steven Polglase. All rights reserved.
-//
+/**
+ @file OperationNode.hpp
+ A virtual class that defines some shared methods for nodes within the OperationTree class.
+*/
 
 #ifndef OperationNode_hpp
 #define OperationNode_hpp
@@ -14,7 +11,11 @@
 namespace Operations {
     class OperationNode {
     private:
+        
+        /** The left child of the node */
         OperationNode *left = nullptr;
+        
+        /** The right child of the node */
         OperationNode *right = nullptr;
         
     public:

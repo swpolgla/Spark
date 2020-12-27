@@ -1,10 +1,7 @@
-//
-//  ValueNode.hpp
-//  spark-calc
-//
-//  Created by Steven Polglase on 5/8/20.
-//  Copyright © 2020 Steven Polglase. All rights reserved.
-//
+/**
+ @file ValueNode.hpp
+ An implementation of the OperationNode class that stores numerical values.
+*/
 
 #ifndef ValueNode_hpp
 #define ValueNode_hpp
@@ -17,11 +14,13 @@ namespace Operations {
         double value;
         
     public:
-        virtual ~ValueNode() {
-            
-        }
+        /** Constructs a ValueNode with a default numerical value of 0. */
         ValueNode();
+        
+        /** Updates the numerical value of the node. */
         void setValue(double _value);
+        
+        /** Returns the numerical value of this node. */
         double evaluate();
     };
 }
