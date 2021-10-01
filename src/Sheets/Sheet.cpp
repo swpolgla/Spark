@@ -21,7 +21,7 @@ Sheet::Sheet() {
 
 bool Sheet::BannedVariableNameCheck(std::wstring name) {
     std::transform(name.begin(), name.end(), name.begin(), ::towlower);
-    return functionNames.count(name) > 0;
+    return functionNames.count(name) > 0 || name.empty();
 }
 
 std::vector<std::pair<size_t, size_t>> Sheet::FunctionNameLocations(std::wstring line) {
@@ -33,8 +33,10 @@ std::vector<std::pair<size_t, size_t>> Sheet::FunctionNameLocations(std::wstring
     for(auto const& x : functionNames) {
         size_t pos = line.find(x, equal);
         while(pos != std::wstring::npos) {
-            std::pair<size_t, size_t> pair(pos, x.length());
-            positions.push_back(pair);
+            if(pos == 0 || !std::iswalpha(line.at(pos - 1))) {
+                std::pair<size_t, size_t> pair(pos, x.length());
+                positions.push_back(pair);
+            }
             pos = line.find(x, pos + 1);
         }
     }
