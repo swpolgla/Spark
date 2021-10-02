@@ -29,7 +29,7 @@ jobs:
       working-directory: ${{github.workspace}}
       
       # Builds the wxWidgets library
-      run: wget ${{WXWIDGETS_SOURCE}}
+      run: wget ${{env.WXWIDGETS_SOURCE}}
       run: tar -xf *.tar.bz2
       run: mkdir ${{github.workspace}}/build-wx
       
