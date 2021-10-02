@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ github-actions-test ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -104,3 +104,51 @@ jobs:
         name: spark_v${{ env.SPARK_VERSION }}_macos
         path: spark_v${{ env.SPARK_VERSION }}_macos.tar.gz
       
+  build-macos:
+    # The CMake configure and build commands are platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Download wxWidgets
+      working-directory: ${{github.workspace}}
+      
+      run: |
+        wget ${{env.WXWIDGETS_SOURCE}}
+        tar -xf *.tar.bz2
+        mkdir ${{github.workspace}}/build-wx
+      
+    - name: Build wxWidgets
+      
+      run: |
+        cd build-wx
+        cmake ../wxWidgets-3.1.5/ -DwxBUILD_SHARED=OFF -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        sudo cmake --build . --config ${{env.BUILD_TYPE}} --target install -j 2
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    
+    - name: Create App Package
+      run: |
+          git clone https://github.com/Xeoncross/macappshell.git
+          ./macappshell/setup.sh Spark icon/icon_mac.png
+          mv build/SparkCalc Spark.app/Contents/MacOS/Spark
+      
+    - name: Make tarball
+      run: tar -czf spark_v${{ env.SPARK_VERSION }}_macos.tar.gz Spark.app
+      
+    - name: Upload executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: spark_v${{ env.SPARK_VERSION }}_macos
+        path: spark_v${{ env.SPARK_VERSION }}_macos.tar.gz
