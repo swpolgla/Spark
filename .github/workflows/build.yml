@@ -10,6 +10,7 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   WXWIDGETS_SOURCE: 'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.tar.bz2'
+  SPARK_VERSION: 0.0.2b
 
 jobs:
   build:
@@ -50,4 +51,12 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      
+    - name: Make tarball
+        run: tar -czf spark_v${{ env.SPARK_VERSION }}_linux.tar.gz ${{github.workspace}}/build/SparkCalc
+    - name: Upload executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: spark_v${{ env.SPARK_VERSION }}_linux
+        path: spark_v${{ env.SPARK_VERSION }}_linux.tar.gz
       
