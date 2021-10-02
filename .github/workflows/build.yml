@@ -53,10 +53,12 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
     - name: Make tarball
-      run: tar -czf spark_v${{ env.SPARK_VERSION }}_linux.tar.gz ${{github.workspace}}/build/SparkCalc
+      run: |
+        cd ${{github.workspace}}/build
+        tar -czf spark_v${{ env.SPARK_VERSION }}_linux.tar.gz SparkCalc
     - name: Upload executable
       uses: actions/upload-artifact@v2
       with:
         name: spark_v${{ env.SPARK_VERSION }}_linux
-        path: spark_v${{ env.SPARK_VERSION }}_linux.tar.gz
+        path: ${{github.workspace}}/build/spark_v${{ env.SPARK_VERSION }}_linux.tar.gz
       
