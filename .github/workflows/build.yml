@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches: [ master ]
-  pull_request
+  pull_request:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
