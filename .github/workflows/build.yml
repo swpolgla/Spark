@@ -28,11 +28,12 @@ jobs:
     - name: download wxWidgets
       working-directory: ${{github.workspace}}
       
-      # Builds the wxWidgets library
       run: |
         wget ${{env.WXWIDGETS_SOURCE}}
         tar -xf *.tar.bz2
         mkdir ${{github.workspace}}/build-wx
+        pwd
+        ls
       
     - name: build wxWidgets
       working-directory: ${{github.workspace}}/build-wx
