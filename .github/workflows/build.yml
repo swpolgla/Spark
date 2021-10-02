@@ -1,4 +1,4 @@
-name: CMake
+name: build
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  WXWIDGETS_SOURCE: 'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.tar.bz2'
 
 jobs:
   build:
@@ -20,6 +21,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Install Dependencies
+      run: sudo apt install libgtk-3-dev -y
+    
+    - name: Configure wxWidgets
+      working-directory: ${{github.workspace}}
+      
+      # Builds the wxWidgets library
+      run: wget ${{WXWIDGETS_SOURCE}}
+      run: tar -xf *.tar.bz2
+      run: mkdir ${{github.workspace}}/build-wx
+      
+      working-directory: ${{github.workspace}}/build-wx
+      
+      run: cmake ${{github.workspace}}/../wxWidgets-3.1.5/ -DwxBUILD_SHARED=OFF
+      run: cmake --build ${{github.workspace}} --target install -j 2
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -29,10 +46,4 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.  
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}}
       
