@@ -33,7 +33,14 @@ std::vector<std::pair<size_t, size_t>> Sheet::FunctionNameLocations(std::wstring
     for(auto const& x : functionNames) {
         size_t pos = line.find(x, equal);
         while(pos != std::wstring::npos) {
-            if(pos == 0 || !std::iswalpha(line.at(pos - 1))) {
+            bool valid = true;
+            if(pos > 0 && std::iswalpha(line.at(pos - 1))) {
+                valid = false;
+            }
+            else if (pos + x.length() >= line.length() || line.at(pos + x.length()) != L'(') {
+                valid = false;
+            }
+            if(valid) {
                 std::pair<size_t, size_t> pair(pos, x.length());
                 positions.push_back(pair);
             }
