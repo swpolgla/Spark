@@ -119,29 +119,12 @@ jobs:
         7z x -y c:\wxWidgets-3.1.5\wxWidgets.7z
         mkdir build-wx
       working-directory: C:\
-    
-    - name: print directories
-      
-      run: |
-        cd C:\
-        dir
-        cd wxWidgets-3.1.5
-        dir
-        cd build
-        dir
-        cd msw
-        dir
-      
-    - name: Preparing nmake
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x64
       
     - name: build wxWidgets
       run: |
-        cd C:\wxWidgets-3.1.5\build
-        dir
-        nmake /f makefile.vc BUILD=release SHARED=0 TARGET_CPU=X64
+        cmake ..\ -DwxBUILD_SHARED=OFF -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake --build . --config ${{env.BUILD_TYPE}} --target install -j 2
+      working-directory: C:\wxWidgets-3.1.5\build-wx
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
