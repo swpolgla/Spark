@@ -119,6 +119,18 @@ jobs:
         7z e -y c:\wxWidgets-3.1.5\wxWidgets.7z
         mkdir build-wx
       working-directory: C:\
+    
+    - name: print directories
+      
+      run: |
+        cd C:\
+        dir
+        cd wxWidgets-3.1.5
+        dir
+        cd build
+        dir
+        cd msw
+        dir
       
     - name: Preparing nmake
       uses: ilammy/msvc-dev-cmd@v1
