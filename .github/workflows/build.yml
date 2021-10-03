@@ -123,6 +123,7 @@ jobs:
     - name: build wxWidgets
       
       run: |
+        dir
         nmake /f makefile.vc BUILD=release SHARED=0 TARGET_CPU=X64
       working-directory: C:\wxWidgets-3.1.5\build\msw
 
