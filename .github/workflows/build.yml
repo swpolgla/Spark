@@ -121,7 +121,7 @@ jobs:
       working-directory: C:\
       
     - name: build wxWidgets
-      
+      uses: ilammy/msvc-dev-cmd@v1
       run: |
         cd C:\wxWidgets-3.1.5\build
         dir
