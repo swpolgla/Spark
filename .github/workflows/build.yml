@@ -111,23 +111,21 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: download wxWidgets
-      working-directory: C:\
       
       run: |
-        cd ${{ working-directory }}
         mkdir wxWidgets-3.1.5
         cd wxWidgets-3.1.5
         Invoke-WebRequest ${{env.WXWIDGETS_SOURCE_WIN}} -OutFile c:\wxWidgets.7z
         7z e -y c:\wxWidgets.7z
-        mkdir ${{github.workspace}}/build-wx
+        mkdir build-wx
+      working-directory: C:\
       
     - name: build wxWidgets
-      working-directory: C:\wxWidgets-3.1.5
       
       run: |
-        cd ${{ working-directory }}\build-wx
         cmake ..\ -DwxBUILD_SHARED=OFF -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         cmake --build . --config ${{env.BUILD_TYPE}} --target install -j 2
+      working-directory: C:\wxWidgets-3.1.5\build-wx
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
