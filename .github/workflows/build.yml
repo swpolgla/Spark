@@ -124,7 +124,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       
     - name: build wxWidgets
-      run: nmake /f makefile.vc BUILD=release SHARED=0
+      run: nmake /f makefile.vc BUILD=release SHARED=1
       working-directory: C:\wxWidgets-3.1.5\build\msw
 
     - name: Configure CMake
