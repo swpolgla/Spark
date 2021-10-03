@@ -16,7 +16,7 @@ env:
 
 jobs:
   build-linux:
-    if ${{false}}
+    if: ${{false}}
     runs-on: ubuntu-latest
 
     steps:
@@ -59,7 +59,7 @@ jobs:
         path: spark_v${{ env.SPARK_VERSION }}_linux.tar.gz
   
   build-macos:
-    if${{false}}
+    if: ${{false}}
     runs-on: macos-latest
 
     steps:
