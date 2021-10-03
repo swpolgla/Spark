@@ -13,9 +13,6 @@ endif()
 set(wxWidgets_USE_STATIC TRUE)
 find_package(wxWidgets COMPONENTS core base richtext html xml REQUIRED)
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MT")
-
 include(${wxWidgets_USE_FILE})
 include(sourcelist.cmake)
 
