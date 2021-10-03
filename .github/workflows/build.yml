@@ -116,7 +116,7 @@ jobs:
         mkdir wxWidgets-3.1.5
         cd wxWidgets-3.1.5
         Invoke-WebRequest ${{env.WXWIDGETS_SOURCE_WIN}} -OutFile c:\wxWidgets-3.1.5\wxWidgets.7z
-        7z e -y c:\wxWidgets-3.1.5\wxWidgets.7z
+        7z x -y c:\wxWidgets-3.1.5\wxWidgets.7z
         mkdir build-wx
       working-directory: C:\
     
