@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(WIN32)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MT")
-	set(wxWidgets_ROOT_DIR C:/wxWidgets-3.1.5)
+	set(wxWidgets_ROOT_DIR C:\wxWidgets-3.1.5)
+	set(wxWidgets_ROOT_DIR C:\wxWidgets-3.1.5)
 endif()
 
 # wxWidgets Setup

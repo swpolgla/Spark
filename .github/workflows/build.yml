@@ -115,8 +115,8 @@ jobs:
       run: |
         mkdir wxWidgets-3.1.5
         cd wxWidgets-3.1.5
-        Invoke-WebRequest ${{env.WXWIDGETS_SOURCE_WIN}} -OutFile c:\wxWidgets-3.1.5\wxWidgets.7z
-        7z x -y c:\wxWidgets-3.1.5\wxWidgets.7z
+        Invoke-WebRequest ${{env.WXWIDGETS_SOURCE_WIN}} -OutFile C:\wxWidgets-3.1.5\wxWidgets.7z
+        7z x -y C:\wxWidgets-3.1.5\wxWidgets.7z
         mkdir build-wx
       working-directory: C:\
       
@@ -129,17 +129,16 @@ jobs:
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: |
+        $Env:WXWIN = "C:\wxWidgets-3.1.5"
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
-    - name: Make tarball
-      run: tar -czf spark_v${{ env.SPARK_VERSION }}_linux.tar.gz build/SparkCalc
-      
     - name: Upload executable
       uses: actions/upload-artifact@v2
       with:
-        name: spark_v${{ env.SPARK_VERSION }}_linux
-        path: spark_v${{ env.SPARK_VERSION }}_linux.tar.gz
+        name: spark_v${{ env.SPARK_VERSION }}_win
+        path: build\SparkCalc.exe
