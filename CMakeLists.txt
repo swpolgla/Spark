@@ -20,7 +20,7 @@ include(${wxWidgets_USE_FILE})
 include(sourcelist.cmake)
 
 if(WIN32)
-	add_executable("${PROJECT_NAME}" WIN32 "${sources}")
+	add_executable("${PROJECT_NAME}" WIN32 "${sources}" ${APP_ICON_RESOURCE_WINDOWS})
 else()
 	add_executable("${PROJECT_NAME}" "${sources}")
 endif()
