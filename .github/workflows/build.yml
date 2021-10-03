@@ -120,8 +120,12 @@ jobs:
         mkdir build-wx
       working-directory: C:\
       
-    - name: build wxWidgets
+    - name: Preparing nmake
       uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+      
+    - name: build wxWidgets
       run: |
         cd C:\wxWidgets-3.1.5\build
         dir
