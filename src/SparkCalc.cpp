@@ -85,7 +85,7 @@ void SparkCalc::OnAbout(wxCommandEvent& WXUNUSED(event))
                  (
                     "Welcome to Spark Calculator!\n"
                     "\n"
-                    "This is version 0.0.2b "
+                    "This is version 0.0.3 "
                     "running under %s.",
                     wxGetOsDescription()
                  ),

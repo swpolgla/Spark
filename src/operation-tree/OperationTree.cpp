@@ -54,12 +54,7 @@ void OperationTree::buildTree(std::wstring _input) {
     }
     
     // Delete spaces from input
-    _input.erase(remove_if(_input.begin(), _input.end(), isspace), _input.end());
-    
-    // Replace % with multiplication equivalent
-    if(_input.find('%') != std::wstring::npos) {
-        replaceAll(_input, L"%", L"*0.01");
-    }
+    _input.erase(remove_if(_input.begin(), _input.end(), iswspace), _input.end());
     
     _input = replaceMathConstants(_input);
     
@@ -67,14 +62,14 @@ void OperationTree::buildTree(std::wstring _input) {
 }
 
 OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::wstring &input, std::vector<int> &parDepthList) {
-    std::size_t subidx = input.find_last_of('-');
+    std::size_t subidx = input.find_last_of(L'-');
     while(subidx != std::wstring::npos && parDepthList[subidx] != 0) {
-        subidx = input.find_last_of('-', subidx - 1);
+        subidx = input.find_last_of(L'-', subidx - 1);
     }
     
-    std::size_t addidx = input.find_last_of('+');
+    std::size_t addidx = input.find_last_of(L'+');
     while(addidx != std::wstring::npos && parDepthList[addidx] != 0) {
-        addidx = input.find_last_of('+', addidx - 1);
+        addidx = input.find_last_of(L'+', addidx - 1);
     }
     if(subidx != std::wstring::npos) {
         // This assists with determining if the dash is intended to be a negative sign
@@ -84,7 +79,7 @@ OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::wstring &in
         // Ex: "3*-2" "-1"
         // When it is known to be a negative sign, processing it should be deferred until after
         // other operations have been processed.
-        if(subidx - 1 >= 0 && (std::isalnum(input[subidx - 1]) != 0 || input[subidx - 1] == ')')) {
+        if(subidx - 1 >= 0 && (std::isalnum(input[subidx - 1]) != 0 || input[subidx - 1] == L')' || input[subidx - 1] == L'%')) {
             // In the order of operations, subtraction is the last operation that should be
             // performed. However this is incorrect in specific cases such as "1-2+3"
             // In cases of mixed addition and subtraction you must evaluate left to right.
@@ -107,14 +102,14 @@ OperationNode* OperationTree::ParseAdditionAndSubtraction(const std::wstring &in
 }
 
 Operations::OperationNode* OperationTree::ParseMultiplicationAndDivision(const std::wstring &input, std::vector<int> &parDepthList) {
-    std::size_t dividx = input.find_last_of('/');
+    std::size_t dividx = input.find_last_of(L'/');
     while(dividx != std::wstring::npos && parDepthList[dividx] != 0) {
-        dividx = input.find_last_of('/', dividx - 1);
+        dividx = input.find_last_of(L'/', dividx - 1);
     }
     
-    std::size_t mulidx = input.find_last_of('*');
+    std::size_t mulidx = input.find_last_of(L'*');
     while(mulidx != std::wstring::npos && parDepthList[mulidx] != 0) {
-        mulidx = input.find_last_of('*', mulidx - 1);
+        mulidx = input.find_last_of(L'*', mulidx - 1);
     }
     if(dividx != std::wstring::npos) {
         if(dividx > mulidx || mulidx == std::wstring::npos) {
@@ -135,15 +130,32 @@ Operations::OperationNode* OperationTree::ParseMultiplicationAndDivision(const s
 }
 
 OperationNode* OperationTree::ParseExponents(const std::wstring &input, std::vector<int> &parDepthList) {
-    std::size_t expidx = input.find_first_of('^');
+    std::size_t expidx = input.find_first_of(L'^');
     while(expidx != std::wstring::npos && parDepthList[expidx] != 0) {
-        expidx = input.find_first_of('^', expidx + 1);
+        expidx = input.find_first_of(L'^', expidx + 1);
     }
     if(expidx != std::wstring::npos) {
         Operations::MathNode *exp = new Operations::MathNode(exponent);
         exp -> setLeft(buildHelper(input.substr(0, expidx)));
         exp -> setRight(buildHelper(input.substr(expidx + 1)));
         return exp;
+    }
+    
+    return nullptr;
+}
+
+OperationNode* OperationTree::ParsePercents(const std::wstring &input, std::vector<int> &parDepthList) {
+    std::size_t percentidx = input.find_first_of(L'%');
+    while(percentidx != std::wstring::npos && parDepthList[percentidx] != 0) {
+        percentidx = input.find_first_of(L'%', percentidx + 1);
+    }
+    if(percentidx != std::wstring::npos) {
+        Operations::ValueNode *percent_value = new Operations::ValueNode();
+        percent_value -> setValue(0.01);
+        Operations::MathNode *percent_operator = new Operations::MathNode(multiplication);
+        percent_operator -> setLeft(buildHelper(input.substr(0, percentidx)));
+        percent_operator -> setRight(percent_value);
+        return percent_operator;
     }
     
     return nullptr;
@@ -203,10 +215,10 @@ OperationNode* OperationTree::buildHelper(std::wstring input) {
     std::vector<int> parDepthList;
     int parDepth = 0;
     for(auto it = input.begin(); it != input.end(); it++) {
-        if(*it == '(') {
+        if(*it == L'(') {
             parDepth++;
         }
-        else if(*it == ')') {
+        else if(*it == L')') {
             parDepth--;
         }
         parDepthList.push_back(parDepth);
@@ -238,12 +250,17 @@ OperationNode* OperationTree::buildHelper(std::wstring input) {
         return exponent;
     }
     
+    OperationNode* percent = ParsePercents(input, parDepthList);
+    if(percent) {
+        return percent;
+    }
+    
     OperationNode* trig = ParseTrig(input);
     if(trig) {
         return trig;
     }
     
-    if(input.front() == '(' && input.back() == ')') {
+    if(input.front() == L'(' && input.back() == L')') {
         Operations::MathNode *par = new Operations::MathNode(parentheses);
         // Math nodes can't have null children, but parentheses only care about the left child.
         // Creating an empty value node for the right child keeps things working as intended.
@@ -275,7 +292,7 @@ double OperationTree::evaluate(std::wstring _input) {
     if(head != nullptr) {
         return head -> evaluate();
     }
-    return 0;
+    return NAN;
 }
 
 void OperationTree::clean() {
