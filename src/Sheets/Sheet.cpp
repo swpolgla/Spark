@@ -124,13 +124,13 @@ std::wstring Sheet::UpdateSheet(const std::vector<std::wstring> _lines) {
             for(auto const& x : variables) {
                 replaceAll(line, x.first, std::to_wstring(x.second));
             }
-            double result = 0;
+            double result = NAN;
             try {
                 result = tree.evaluate(line);
             } catch(int i) {
                 //Do nothing
             }
-            if(result != 0) {
+            if(!std::isnan(result)) {
                 output.append(formatDecimal(result));
             }
             

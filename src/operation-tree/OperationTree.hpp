@@ -64,6 +64,14 @@ namespace Operations {
         Operations::OperationNode *ParseExponents(const std::wstring &input, std::vector<int> &parDepthList);
         
         /**
+           Parses an input string for the highest priority percent operation if present. Recursively builds
+           a subtree of all inputs into the operation.
+           @param input the string to parse
+           @return the root node of the sub tree
+        */
+        Operations::OperationNode *ParsePercents(const std::wstring &input, std::vector<int> &parDepthList);
+        
+        /**
            Parses an input string for any trig operations if present. Recursively builds a subtree
            of whatever is being input into the trig function and returns the root node of that subtree.
            @param input the string to parse
